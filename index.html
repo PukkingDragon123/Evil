@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="theme-color" content="#0e1518" />
+  <title>Plenty Fish in the Sea 🐟🪷</title>
+  <meta name="description" content="A top-down 3D origami koi breeding game set in a Japanese zen pond. Buy koi, breed for genes & subspecies, and raise as many fish as you can." />
+  <link rel="stylesheet" href="./styles.css" />
+
+  <!-- Three.js is vendored locally so the game is fully self-contained. -->
+  <script type="importmap">
+    { "imports": { "three": "./vendor/three.module.js" } }
+  </script>
+</head>
+<body>
+  <div id="stage"></div>
+  <div id="ui"></div>
+
+  <div id="loading">
+    <div class="loading__inner">
+      <div class="loading__koi">🐟</div>
+      <h1>Plenty Fish in the Sea</h1>
+      <p>filling the pond…</p>
+    </div>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

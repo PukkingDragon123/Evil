@@ -1,0 +1,11 @@
+{
+  "name": "plenty-fish-in-the-sea",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A top-down 3D origami koi breeding game set in a Japanese zen pond.",
+  "scripts": {
+    "start": "python3 -m http.server 8080",
+    "test": "node test/genetics.test.js"
+  }
+}
