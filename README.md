@@ -8,14 +8,25 @@ Web Speech API.
 
 ![rap battle](https://img.shields.io/badge/play-in%20your%20browser-ff2e88)
 
+## Modes
+
+- 🎤 **Solo Cypher** — just you vs. the beat.
+- ⚔️ **1v1 Local** — pass-the-mic battle. Each player gets their own bars, then a
+  **versus scoreboard** crowns the winner.
+- ✏️ **Custom** — type your own set of words (the **last word is the punchline**)
+  and hand the device to a friend to surprise them.
+
+…each at three difficulties — **Easy / Normal / Hard** — which change the BPM,
+the number of bars, how many required words you get, and how strict the judge is.
+
 ## How to play
 
-1. Hit **GRAB THE MIC** and allow microphone access.
-2. You get **4 blocks**:
-   - **BAR 1–3** → seed words to weave into your bars.
-   - **PUNCHLINE** → the word your final line must **rhyme with**.
-3. On `GO!` the beat starts. Spit your verse over 8 bars — words light up as you
-   land them, and the punchline block glows when you nail a rhyme.
+1. Pick a **difficulty** and a **mode** on the home screen, then allow mic access.
+2. Bars scroll across a **moving lane** toward the center line. Most are
+   `FREESTYLE`; some carry a **required word**; the last one is the **PUNCHLINE**
+   you must rhyme with.
+3. A **checklist** tracks the required words — they tick green as you land them,
+   and the punchline turns gold when you nail a rhyme.
 4. When the beat ends (or you hit **END VERSE**), the judge scores you:
 
 | Score | What it measures |

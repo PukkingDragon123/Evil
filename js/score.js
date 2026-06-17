@@ -63,8 +63,9 @@
     round.seeds.forEach((s) => { if (set.has(norm(s))) seedHits++; });
     const seedFrac = round.seeds.length ? seedHits / round.seeds.length : 0;
 
+    const seedFracSafe = round.seeds.length ? seedFrac : 1; // no seeds (custom) → don't penalise
     const punchSaid = set.has(norm(round.punchWord));
-    const score = Math.round(70 * seedFrac + (punchSaid ? 30 : 0));
+    const score = Math.round(70 * seedFracSafe + (punchSaid ? 30 : 0));
     return {
       score: clamp(score, 0, 100),
       seedHits,
@@ -104,9 +105,11 @@
     }
 
     const uniqueRatio = uniq.length / total; // vocabulary richness
-    const density = clamp(total / 28, 0, 1); // ~28 words fills 8 bars
+    const barCount = (round.bars && round.bars.length) || 8;
+    const density = clamp(total / (barCount * 4), 0, 1); // ~4 words per bar fills it
 
-    const rhymeScore = clamp(rhymeHits / 3, 0, 1) * 45; // landing the punch
+    const need = (round.diff && round.diff.rhymeNeed) || 2;
+    const rhymeScore = clamp(rhymeHits / need, 0, 1) * 45; // landing the punch
     const internalScore = clamp(internalPairs / 6, 0, 1) * 20;
     const vocabScore = clamp((uniqueRatio - 0.45) / 0.4, 0, 1) * 15;
     const flowScore = density * 20;
@@ -202,15 +205,20 @@
     const lyrical = scoreLyrical(round, said);
     const beat = scoreBeat(audioData || {});
 
+    // difficulty leniency nudges the performance scores (accuracy stays objective)
+    const mult = (round.diff && round.diff.lenient) || 1;
+    const beatScore = clamp(Math.round(beat.score * mult), 0, 100);
+    const lyrScore = clamp(Math.round(lyrical.score * mult), 0, 100);
+
     const overall = Math.round(
-      0.3 * accuracy.score + 0.3 * beat.score + 0.4 * lyrical.score
+      0.3 * accuracy.score + 0.3 * beatScore + 0.4 * lyrScore
     );
     const rank = rankFor(overall);
 
     return {
       accuracy: accuracy.score,
-      beat: beat.score,
-      lyrical: lyrical.score,
+      beat: beatScore,
+      lyrical: lyrScore,
       overall,
       rank,
       quip: quipFor(overall, { accuracy, lyrical, beat }),
