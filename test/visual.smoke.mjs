@@ -9,10 +9,11 @@ globalThis.self = globalThis;
 globalThis.window = { devicePixelRatio: 1, innerWidth: 1280, innerHeight: 720 };
 function ctx2d() {
   const noop = () => {};
+  const grad = () => ({ addColorStop: noop });
   return {
     fillStyle: '', strokeStyle: '', lineWidth: 0,
-    fillRect: noop, beginPath: noop, arc: noop, stroke: noop, moveTo: noop, lineTo: noop,
-    createRadialGradient: () => ({ addColorStop: noop }),
+    fillRect: noop, beginPath: noop, arc: noop, stroke: noop, fill: noop, moveTo: noop, lineTo: noop,
+    createRadialGradient: grad, createLinearGradient: grad,
   };
 }
 globalThis.document = {
@@ -27,17 +28,18 @@ const ok = (c, m) => c ? passed++ : (failed++, console.error('  ✗ FAIL: ' + m)
 const THREE = await import('three');
 const { describe, makeGenome, randomWildGenome, PATTERNS, FINS } =
   await import('../src/game/genetics.js');
-const { createOrigamiFish, updateFishMesh, disposeFishMesh } =
-  await import('../src/scene/origamiFish.js');
+const { createKoiFish, updateKoiFish, disposeKoiFish, setKoiTime } =
+  await import('../src/scene/koiFish.js');
 const { createWater } = await import('../src/scene/water.js');
 const { createRipples } = await import('../src/scene/ripples.js');
 const { createGarden } = await import('../src/scene/garden.js');
 
 console.log('visual smoke test');
 
-// --- origami fish across every pattern & fin --------------------------------
+// --- koi fish across every pattern & fin ------------------------------------
 {
   let built = 0, animated = 0;
+  setKoiTime(1.0);
   for (let pi = 0; pi < PATTERNS.length; pi++) {
     for (let fi = 0; fi < FINS.length; fi++) {
       const desc = describe(makeGenome({
@@ -47,33 +49,30 @@ console.log('visual smoke test');
         baseHue: Math.random(), baseSat: Math.random(), baseLight: Math.random(),
         patchHue: Math.random(), size: Math.random(), luster: Math.random(),
       }));
-      const fish = createOrigamiFish(desc);
+      const fish = createKoiFish(desc);
       if (!(fish instanceof THREE.Group)) { ok(false, 'fish is a Group'); break; }
       built++;
 
-      // Body mesh present with material groups that cover the whole geometry.
-      const body = fish.children.find((c) => c.isMesh && Array.isArray(c.material));
-      ok(body, 'fish has a multi-material body mesh');
-      const pos = body.geometry.getAttribute('position');
-      const groupVerts = body.geometry.groups.reduce((a, g) => a + g.count, 0);
-      ok(groupVerts === pos.count, `material groups cover all body verts (${groupVerts}/${pos.count})`);
-      ok(body.geometry.groups.every((g) => g.materialIndex >= 0 && g.materialIndex < 4),
-        'every group uses a valid material slot');
+      // Body: a single textured mesh with proper UVs + indices.
+      const body = fish.children.find((c) => c.isMesh && c.material && c.material.map);
+      ok(body, 'fish has a textured body mesh');
+      ok(body.geometry.getAttribute('uv'), 'body geometry has UVs for the koi texture');
+      ok(body.geometry.getIndex(), 'body geometry is indexed (smooth, not faceted)');
+      ok(body.material.flatShading !== true, 'body uses smooth shading (not origami)');
 
-      // Expected rig.
       const u = fish.userData;
-      ok(u.tailPivot && u.pecL && u.pecR, 'fish has tail & pectoral pivots');
+      ok(u.bend && u.bend.uAmp && u.bend.uPhase, 'fish has swim-bend uniforms');
+      ok(u.pecL && u.pecR, 'fish has pectoral fins');
       ok(u.shadow && u.ring, 'fish has shadow & selection ring');
-      ok(u.materials.length === 6, 'six per-fish materials');
+      ok(u.materials.length === 4 && u.texture, 'per-fish materials + texture tracked for disposal');
       ok(fish.scale.x === desc.phenotype.size, 'scaled to genetic size');
 
-      // Animate a couple of frames — must not throw or NaN.
-      updateFishMesh(fish, 0.5, 0.8);
-      updateFishMesh(fish, 1.7, 1.4);
-      ok(Number.isFinite(u.tailPivot.rotation.y), 'tail wag is finite');
+      updateKoiFish(fish, 0.5, 0.8);
+      updateKoiFish(fish, 1.7, 1.4);
+      ok(Number.isFinite(u.bend.uAmp.value), 'swim amplitude is finite');
       animated++;
 
-      disposeFishMesh(fish);
+      disposeKoiFish(fish);
       if (failed) break;
     }
     if (failed) break;
@@ -86,12 +85,12 @@ console.log('visual smoke test');
 {
   let okCount = 0;
   for (let i = 0; i < 80; i++) {
-    const fish = createOrigamiFish(describe(randomWildGenome(Math.random)));
-    updateFishMesh(fish, i * 0.13, Math.random() * 1.5);
-    disposeFishMesh(fish);
+    const fish = createKoiFish(describe(randomWildGenome(Math.random)));
+    updateKoiFish(fish, i * 0.13, Math.random() * 1.5);
+    disposeKoiFish(fish);
     okCount++;
   }
-  ok(okCount === 80, 'built & animated 80 random fish without error');
+  ok(okCount === 80, 'built & animated 80 random koi without error');
 }
 
 // --- water ------------------------------------------------------------------
@@ -100,6 +99,7 @@ console.log('visual smoke test');
   ok(water.mesh && water.mesh.isMesh, 'water mesh created');
   ok(water.material instanceof THREE.ShaderMaterial, 'water uses a ShaderMaterial');
   ok('uTime' in water.material.uniforms && 'uPondR' in water.material.uniforms, 'water uniforms present');
+  ok('uLight' in water.material.uniforms, 'water exposes a light direction (synced to the sun)');
   ok(water.material.uniforms.uPondR.value === 18, 'pond radius wired into shader');
   water.update(3.2);
   ok(water.material.uniforms.uTime.value === 3.2, 'water update sets time');
@@ -123,6 +123,9 @@ console.log('visual smoke test');
   const g = createGarden(18);
   ok(g.group instanceof THREE.Group, 'garden group created');
   ok(g.group.children.length > 5, 'garden populated (sand, lip, rocks, pads...)');
+  let shadowCasters = 0;
+  g.group.traverse((o) => { if (o.isMesh && o.castShadow) shadowCasters++; });
+  ok(shadowCasters > 0, 'garden objects cast shadows in the sunlight');
   g.update(2.0);
   g.update(4.0);
   ok(true, 'garden floaters animate without error');

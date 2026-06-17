@@ -1,6 +1,7 @@
 # 🐟 Plenty Fish in the Sea 🪷
 
-A calm, top-down **3D origami koi breeding game** set in a Japanese zen pond.
+A calm, top-down **3D koi breeding game** set in a sunlit Japanese zen pond,
+with a wood-and-washi dojo interface.
 Buy koi, pair them, and breed across generations — mixing **genes**, chasing
 **mutations**, and discovering real koi **subspecies**. Your goal is simple:
 raise as many fish as you possibly can, and breed the most beautiful ones.
@@ -84,7 +85,7 @@ src/
     state.js          # pond, economy, actions, save/load
   scene/
     pondScene.js      # renderer, camera, lights, fish movement & picking
-    origamiFish.js    # procedural faceted origami koi + swim animation
+    koiFish.js        # smooth procedural koi (painted koi-pattern textures) + swim
     water.js          # stylised translucent water shader
     ripples.js        # tap ripples & droplet particles
     garden.js         # raked sand, rocks, lily pads, lotus, reeds

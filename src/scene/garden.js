@@ -127,6 +127,7 @@ function makeReeds(count = 6) {
     blade.position.set((Math.random() - 0.5) * 1.2, h / 2, (Math.random() - 0.5) * 1.2);
     blade.rotation.z = (Math.random() - 0.5) * 0.4;
     blade.rotation.x = (Math.random() - 0.5) * 0.3;
+    blade.castShadow = true;
     group.add(blade);
   }
   return group;
@@ -143,6 +144,7 @@ export function createGarden(pondRadius) {
   basin.rotation.x = -Math.PI / 2;
   basin.position.y = -1.2;
   basin.renderOrder = 0;
+  basin.receiveShadow = true;
   group.add(basin);
 
   // Raked-sand ground (a big disc the water sits on top of).
@@ -151,6 +153,7 @@ export function createGarden(pondRadius) {
     new THREE.MeshStandardMaterial({ map: rakedSandTexture(), roughness: 1.0 }));
   sand.rotation.x = -Math.PI / 2;
   sand.position.y = -0.08;
+  sand.receiveShadow = true;
   group.add(sand);
 
   // Dark stone lip framing the water's edge.
@@ -171,6 +174,8 @@ export function createGarden(pondRadius) {
     const rock = makeRock(scale);
     rock.position.set(Math.cos(a) * rad, scale * (inWater ? 0.2 : 0.35) - 0.1, Math.sin(a) * rad);
     rock.scale.y = 0.7 + Math.random() * 0.5;
+    rock.castShadow = true;
+    rock.receiveShadow = true;
     group.add(rock);
   }
 
@@ -191,6 +196,8 @@ export function createGarden(pondRadius) {
     const baseY = 0.06;
     pad.position.set(Math.cos(a) * rad, baseY, Math.sin(a) * rad);
     pad.renderOrder = 3;
+    pad.castShadow = true;
+    pad.receiveShadow = true;
     group.add(pad);
     floaters.push({ obj: pad, baseY, phase: Math.random() * 6.28, speed: 0.6 + Math.random() * 0.5, spin: (Math.random() - 0.5) * 0.05 });
 
@@ -198,6 +205,7 @@ export function createGarden(pondRadius) {
       const lotus = makeLotus();
       lotus.position.copy(pad.position);
       lotus.position.y = baseY + 0.02;
+      lotus.traverse((o) => { if (o.isMesh) o.castShadow = true; });
       group.add(lotus);
       floaters.push({ obj: lotus, baseY: lotus.position.y, phase: Math.random() * 6.28, speed: 0.6, spin: 0 });
       void radius;

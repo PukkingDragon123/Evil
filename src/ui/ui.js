@@ -28,7 +28,7 @@ export function createUI(root, { state, actions }) {
 
   // --- build skeleton ---
   root.insertAdjacentHTML('beforeend', `
-    <div class="brand"><h1>Plenty Fish<span>in the Sea</span></h1></div>
+    <div class="brand"><div class="seal">鯉</div><h1>Plenty Fish<span>in the Sea</span></h1></div>
 
     <div class="hud">
       <div class="pill" title="Coins"><b>🪙</b> <span id="hud-coins">0</span></div>
@@ -121,7 +121,7 @@ export function createUI(root, { state, actions }) {
       shopRow('💮', 'Fertilizer', 'Instantly rest-ready every koi for breeding.',
         CONFIG.fertilizerCost, s.coins >= CONFIG.fertilizerCost, () => actions.buyFertilizer()),
     ];
-    el.panelBody.innerHTML = `<h2>🛒 Shop</h2><div class="shop">` + rows.map((r, i) => `
+    el.panelBody.innerHTML = `<h2>🛒 Shop · 店</h2><div class="shop">` + rows.map((r, i) => `
       <div class="shop__row">
         <div class="shop__icon">${r.icon}</div>
         <div class="shop__txt"><b>${r.title}</b><span>${r.desc}</span></div>
@@ -136,7 +136,7 @@ export function createUI(root, { state, actions }) {
   function renderKoidex() {
     const total = SUBSPECIES.length;
     const found = SUBSPECIES.filter((s) => state.discovered[s.id]).length;
-    el.panelBody.innerHTML = `<h2>📖 Koi-dex <small>${found}/${total} discovered</small></h2>
+    el.panelBody.innerHTML = `<h2>📖 Koi-dex · 図鑑 <small>${found}/${total}</small></h2>
       <div class="dex">` + SUBSPECIES.map((sp) => {
         const got = state.discovered[sp.id];
         const r = Math.max(1, Math.min(5, Math.round(sp.rarity)));
@@ -173,13 +173,13 @@ export function createUI(root, { state, actions }) {
           ${can.ok ? `Breed  ·  🪙 ${CONFIG.breedCost}` : can.msg}
         </button>`;
     }
-    el.panelBody.innerHTML = `<h2>🧬 Breeding</h2>${body}`;
+    el.panelBody.innerHTML = `<h2>🧬 Breeding · 繁殖</h2>${body}`;
     const btn = el.panelBody.querySelector('#do-breed');
     if (btn) btn.addEventListener('click', () => actions.breed());
   }
 
   function renderHelp() {
-    el.panelBody.innerHTML = `<h2>？ How to play</h2>
+    el.panelBody.innerHTML = `<h2>？ How to play · 道場</h2>
       <div class="help">
         <p><b>Goal:</b> raise as many koi as you can — and breed ever finer fish.</p>
         <p>🪙 Your pond earns <b>coins</b> every second. Better, rarer koi earn more.</p>

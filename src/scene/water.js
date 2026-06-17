@@ -82,7 +82,7 @@ const fragmentShader = /* glsl */ `
     float foam = smoothstep(0.9, 0.99, shore) * (0.5 + 0.5 * sin(vRadius * 6.0 + uTime * 2.0));
 
     vec3 colr = base + uHi * (spec + spec2) + uHi * fres * 0.22 + c + uFoam * foam * 0.6;
-    float alpha = mix(0.74, 0.92, shore);
+    float alpha = mix(0.55, 0.82, shore); // clearer water so the koi read well
     gl_FragColor = vec4(colr, alpha);
   }
 `;
@@ -95,10 +95,10 @@ export function createWater(pondRadius) {
     uniforms: {
       uTime: { value: 0 },
       uPondR: { value: pondRadius },
-      uDeep: { value: new THREE.Color(0x0d4a52) },
-      uShallow: { value: new THREE.Color(0x2f8f86) },
-      uHi: { value: new THREE.Color(0xdffaf2) },
-      uFoam: { value: new THREE.Color(0xeafef7) },
+      uDeep: { value: new THREE.Color(0x15616a) },
+      uShallow: { value: new THREE.Color(0x4cc0a8) },
+      uHi: { value: new THREE.Color(0xffffff) },
+      uFoam: { value: new THREE.Color(0xf3fff9) },
       uLight: { value: new THREE.Vector3(-0.4, 0.85, 0.35) },
     },
     vertexShader,

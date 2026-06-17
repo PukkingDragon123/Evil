@@ -13,35 +13,84 @@ import { CONFIG } from '../config.js';
 import { createWater } from './water.js';
 import { createGarden } from './garden.js';
 import { createRipples } from './ripples.js';
-import { createOrigamiFish, updateFishMesh, disposeFishMesh } from './origamiFish.js';
+import { createKoiFish, updateKoiFish, disposeKoiFish, setKoiTime } from './koiFish.js';
 
 const POND_R = CONFIG.pondRadius;
 
 export function createPondScene() {
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x0e1518);
-  scene.fog = new THREE.Fog(0x0e1518, 60, 170);
+  scene.fog = new THREE.Fog(0xefdcb8, 80, 210); // warm daytime haze in the distance
 
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
+  renderer.toneMappingExposure = 1.12;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-  const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 400);
+  const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 600);
 
-  // --- lights ---
-  scene.add(new THREE.HemisphereLight(0xcfe8ff, 0x3f5a36, 0.95));
-  const key = new THREE.DirectionalLight(0xfff2dc, 1.15);
-  key.position.set(-10, 18, 7);
-  scene.add(key);
-  const fill = new THREE.DirectionalLight(0x9fd0ff, 0.35);
-  fill.position.set(9, 8, -6);
+  // --- sky dome (soft daytime gradient) ---
+  const sky = new THREE.Mesh(
+    new THREE.SphereGeometry(280, 32, 16),
+    new THREE.ShaderMaterial({
+      side: THREE.BackSide, depthWrite: false, fog: false,
+      uniforms: {
+        top: { value: new THREE.Color(0x7fb0e6) },
+        bottom: { value: new THREE.Color(0xf6e7c6) },
+      },
+      vertexShader: `varying float vy;
+        void main(){ vy = normalize(position).y; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
+      fragmentShader: `varying float vy; uniform vec3 top; uniform vec3 bottom;
+        void main(){ float t = clamp(vy*0.5+0.5,0.0,1.0); gl_FragColor = vec4(mix(bottom, top, pow(t,0.8)), 1.0); }`,
+    }));
+  scene.add(sky);
+
+  // --- sunshine ---
+  const sunDir = new THREE.Vector3(-0.55, 0.74, 0.38).normalize();
+  scene.add(new THREE.HemisphereLight(0xcfe6ff, 0x6f5d3e, 0.75));
+  const sun = new THREE.DirectionalLight(0xfff1d4, 1.85);
+  sun.position.copy(sunDir).multiplyScalar(70);
+  sun.castShadow = true;
+  sun.shadow.mapSize.set(2048, 2048);
+  const sc = sun.shadow.camera;
+  sc.near = 10; sc.far = 220;
+  sc.left = -(POND_R + 12); sc.right = POND_R + 12;
+  sc.top = POND_R + 12; sc.bottom = -(POND_R + 12);
+  sc.updateProjectionMatrix();
+  sun.shadow.bias = -0.0004;
+  sun.shadow.normalBias = 0.7;
+  scene.add(sun);
+  scene.add(sun.target);
+  const fill = new THREE.DirectionalLight(0x9fc2ff, 0.28);
+  fill.position.set(12, 9, -8);
   scene.add(fill);
+
+  // Visible sun glow billboarded high in the sky.
+  const sunGlow = (() => {
+    const c = document.createElement('canvas'); c.width = c.height = 256;
+    const g = c.getContext('2d');
+    const grd = g.createRadialGradient(128, 128, 0, 128, 128, 128);
+    grd.addColorStop(0, 'rgba(255,252,238,1)');
+    grd.addColorStop(0.18, 'rgba(255,242,205,0.95)');
+    grd.addColorStop(0.5, 'rgba(255,224,160,0.32)');
+    grd.addColorStop(1, 'rgba(255,224,160,0)');
+    g.fillStyle = grd; g.fillRect(0, 0, 256, 256);
+    const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
+    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: tex, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, depthTest: false,
+    }));
+    sprite.scale.setScalar(70);
+    sprite.position.copy(sunDir).multiplyScalar(200);
+    return sprite;
+  })();
+  scene.add(sunGlow);
 
   // --- world ---
   const garden = createGarden(POND_R);
   scene.add(garden.group);
   const water = createWater(POND_R);
+  water.material.uniforms.uLight.value.copy(sunDir); // align glints with the sun
   scene.add(water.mesh);
   const ripples = createRipples();
   scene.add(ripples.group);
@@ -50,25 +99,36 @@ export function createPondScene() {
   const decals = new THREE.Group();
   scene.add(decals);
 
-  // --- camera rig (orbit around pond centre) ---
+  // --- camera rig (smooth, damped orbit around the pond) ---
   const target = new THREE.Vector3(0, 0, 0);
-  const cam = { radius: 42, azimuth: -Math.PI / 2, polar: 0.62 };
-  function applyCamera() {
-    const sinP = Math.sin(cam.polar), cosP = Math.cos(cam.polar);
+  const camCur = { radius: 44, az: -Math.PI / 2, polar: 0.58 };
+  const camTgt = { radius: 44, az: -Math.PI / 2, polar: 0.58 };
+  let idle = 0;
+  function applyCam() {
+    const sinP = Math.sin(camCur.polar), cosP = Math.cos(camCur.polar);
     camera.position.set(
-      target.x + cam.radius * sinP * Math.cos(cam.azimuth),
-      target.y + cam.radius * cosP,
-      target.z + cam.radius * sinP * Math.sin(cam.azimuth));
+      target.x + camCur.radius * sinP * Math.cos(camCur.az),
+      target.y + camCur.radius * cosP,
+      target.z + camCur.radius * sinP * Math.sin(camCur.az));
     camera.lookAt(target);
   }
-  applyCamera();
+  function stepCamera(dt) {
+    idle += dt;
+    if (idle > 5) camTgt.az += dt * 0.05; // slow, zen drift when left alone
+    const k = 1 - Math.pow(0.0016, Math.min(dt, 0.05)); // frame-rate independent damping
+    camCur.radius += (camTgt.radius - camCur.radius) * k;
+    camCur.az += (camTgt.az - camCur.az) * k;
+    camCur.polar += (camTgt.polar - camCur.polar) * k;
+    applyCam();
+  }
+  applyCam();
 
   // --- fish view registry ---
   const views = new Map(); // fishId -> view
 
   function addFish(id, desc) {
     if (views.has(id)) return;
-    const group = createOrigamiFish(desc);
+    const group = createKoiFish(desc);
     group.userData.fishId = id;
     const a = Math.random() * Math.PI * 2;
     const r = Math.random() * (POND_R - 3);
@@ -98,7 +158,7 @@ export function createPondScene() {
     if (!v) return;
     scene.remove(v.group);
     decals.remove(v.group.userData.shadow, v.group.userData.ring);
-    disposeFishMesh(v.group);
+    disposeKoiFish(v.group);
     views.delete(id);
   }
 
@@ -142,11 +202,11 @@ export function createPondScene() {
     g.position.z = v.z;
     g.position.y = CONFIG.swimDepth + Math.sin(t * 1.1 + g.userData.phase) * 0.05;
     g.rotation.y = -v.heading;
-    updateFishMesh(g, t, v.speed);
+    updateKoiFish(g, t, v.speed);
 
-    // Shadow tracks on the floor; ring tracks on the surface.
+    // Shadow tracks on the pond floor; ring tracks on the surface.
     const sh = g.userData.shadow;
-    sh.position.set(v.x, -0.8, v.z);
+    sh.position.set(v.x, -1.16, v.z);
     const ring = g.userData.ring;
     ring.position.set(v.x, 0.07, v.z);
     ring.rotation.z += dt * 0.8;
@@ -176,10 +236,12 @@ export function createPondScene() {
   let elapsed = 0;
   function update(dt) {
     elapsed += dt;
+    setKoiTime(elapsed);
     water.update(elapsed);
     garden.update(elapsed);
     ripples.update(dt);
     for (const v of views.values()) stepFish(v, dt, elapsed);
+    stepCamera(dt);
     renderer.render(scene, camera);
   }
 
@@ -207,15 +269,15 @@ export function createPondScene() {
     return best;
   }
 
-  // --- camera controls ---
+  // --- camera controls (adjust the target; stepCamera eases toward it) ---
   function orbit(dAz, dPolar) {
-    cam.azimuth += dAz;
-    cam.polar = Math.max(0.12, Math.min(1.0, cam.polar + dPolar));
-    applyCamera();
+    camTgt.az += dAz;
+    camTgt.polar = Math.max(0.12, Math.min(1.28, camTgt.polar + dPolar));
+    idle = 0;
   }
   function zoom(delta) {
-    cam.radius = Math.max(16, Math.min(72, cam.radius + delta));
-    applyCamera();
+    camTgt.radius = Math.max(16, Math.min(82, camTgt.radius + delta));
+    idle = 0;
   }
 
   function resize() {
