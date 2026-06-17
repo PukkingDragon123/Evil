@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RAP BATTLE 🎤 — Freestyle to the Beat</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <main class="stage">
+
+    <!-- ===== TITLE ===== -->
+    <section id="screen-title" class="screen active">
+      <h1 class="logo">RAP<span>BATTLE</span></h1>
+      <p class="tagline">Open the mic. Hit the words. Land the punchline.</p>
+
+      <ol class="how">
+        <li><b>1.</b> You get <b>4 blocks</b> of words — 3 bars of seeds + 1 <b>punchline</b>.</li>
+        <li><b>2.</b> A beat drops. Freestyle and weave the words into your bars.</li>
+        <li><b>3.</b> Make your last line <b>rhyme with the punchline word.</b></li>
+        <li><b>4.</b> The AI judge scores your <b>Accuracy</b>, <b>Beat</b> &amp; <b>Lyrics</b>.</li>
+      </ol>
+
+      <button id="btn-start" class="btn big">🎤 GRAB THE MIC</button>
+      <p class="hint">tip: press <kbd>Space</kbd> to start</p>
+      <p id="sr-status" class="status"></p>
+    </section>
+
+    <!-- ===== PLAY ===== -->
+    <section id="screen-play" class="screen">
+      <header class="play-head">
+        <span id="theme-label" class="chip">THEME</span>
+        <span id="bar-indicator" class="chip">BAR 1 / 8</span>
+        <span id="mic-status" class="chip">🎤</span>
+      </header>
+
+      <div id="blocks" class="blocks"></div>
+
+      <div id="booth" class="booth">
+        <div id="beat-bars" class="eqwrap">
+          <i class="eq"></i><i class="eq"></i><i class="eq"></i><i class="eq"></i>
+          <i class="eq"></i><i class="eq"></i><i class="eq"></i><i class="eq"></i>
+          <i class="eq"></i><i class="eq"></i><i class="eq"></i><i class="eq"></i>
+        </div>
+
+        <div id="countdown" class="countdown hidden">3</div>
+
+        <div class="meters">
+          <div class="meter">
+            <label>🎙️ MIC</label>
+            <div class="track"><div id="mic-fill" class="fill mic"></div></div>
+          </div>
+          <div class="meter">
+            <label>⏱️ BEAT</label>
+            <div class="track"><div id="progress-fill" class="fill prog"></div></div>
+          </div>
+        </div>
+
+        <div id="transcript" class="transcript">…</div>
+        <textarea id="type-fallback" class="type-fallback hidden"
+          placeholder="Type your bars here (no speech recognition detected)…"></textarea>
+        <p class="rhyme-hint">rhyme bank — <span id="hint-rhymes"></span></p>
+
+        <button id="btn-stop" class="btn stop hidden">⏹ END VERSE</button>
+      </div>
+    </section>
+
+    <!-- ===== RESULT ===== -->
+    <section id="screen-result" class="screen">
+      <div id="result-card" class="result-card" data-tier="ok">
+        <div class="rank">
+          <span id="rank-emoji" class="rank-emoji">🎤</span>
+          <span id="rank-name" class="rank-name">MC</span>
+        </div>
+
+        <div class="overall">
+          <div id="overall-score" class="overall-num">0</div>
+          <div class="overall-label">OVERALL</div>
+        </div>
+
+        <div class="scores">
+          <div class="score-row">
+            <span class="score-name">🎯 ACCURACY</span>
+            <div class="track"><div id="acc-fill" class="fill s-acc"></div></div>
+            <span id="acc-val" class="score-val">0</span>
+          </div>
+          <div class="score-row">
+            <span class="score-name">🥁 BEAT</span>
+            <div class="track"><div id="beat-fill" class="fill s-beat"></div></div>
+            <span id="beat-val" class="score-val">0</span>
+          </div>
+          <div class="score-row">
+            <span class="score-name">✍️ LYRICAL</span>
+            <div class="track"><div id="lyr-fill" class="fill s-lyr"></div></div>
+            <span id="lyr-val" class="score-val">0</span>
+          </div>
+        </div>
+
+        <p id="quip" class="quip"></p>
+        <ul id="recap" class="recap"></ul>
+
+        <div class="result-actions">
+          <button id="btn-again" class="btn big">🔁 RUN IT BACK</button>
+          <button id="btn-home" class="btn ghost">🏠 HOME</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="js/words.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/speech.js"></script>
+  <script src="js/score.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
