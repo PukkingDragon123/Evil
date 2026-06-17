@@ -3,155 +3,67 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RAP BATTLE — Freestyle to the Beat</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <title>EVIL ARCADE</title>
+  <style>
+    :root { --ink:#0a0a0e; --paper:#f4f1ea; --muted:#8a8a9c; --line:#2a2a3a; --hot:#ff4d2e; --gold:#ffd23a; --pink:#ff2e88; }
+    * { box-sizing: border-box; }
+    html, body { margin:0; min-height:100%; background: radial-gradient(130% 90% at 50% -10%, #20141a, #0a0a0e 60%); color:var(--paper);
+      font-family: system-ui, "Segoe UI", Helvetica, Arial, sans-serif; -webkit-font-smoothing:antialiased; }
+    .wrap { max-width: 920px; margin: 0 auto; padding: 48px 20px 80px; }
+    .brand { text-align:center; margin-bottom: 40px; }
+    .kicker { letter-spacing: 8px; font-size: 12px; color: var(--muted); font-weight: 800; }
+    h1 { font-family:"Arial Narrow", Impact, system-ui, sans-serif; font-size: clamp(52px,16vw,140px); margin: 6px 0; font-weight:900;
+      letter-spacing:-3px; text-transform:uppercase; transform: skewX(-7deg); text-shadow: 4px 4px 0 var(--hot), 8px 8px 0 rgba(0,0,0,.35); }
+    .sub { color: var(--gold); font-weight:700; letter-spacing:2px; text-transform:uppercase; font-size:13px; }
+    .games { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+    @media (max-width:640px){ .games{ grid-template-columns:1fr; } }
+    .game { display:block; text-decoration:none; color:inherit; border:1px solid var(--line); border-radius:18px; padding:26px;
+      background: linear-gradient(180deg,#181826,#141420); transition: transform .1s, border-color .2s, box-shadow .2s; position:relative; overflow:hidden; }
+    .game:hover { transform: translateY(-4px); box-shadow: 0 18px 50px rgba(0,0,0,.5); }
+    .game .ico { font-size: 56px; }
+    .game h2 { font-family:"Arial Narrow", Impact, system-ui, sans-serif; font-size: 34px; margin:10px 0 6px; text-transform:uppercase; letter-spacing:-1px; }
+    .game p { color: var(--muted); line-height:1.5; margin:0 0 14px; }
+    .game .tags { display:flex; gap:8px; flex-wrap:wrap; }
+    .tag { font-size:11px; font-weight:800; letter-spacing:1px; padding:5px 10px; border-radius:999px; background:#0f0f17; border:1px solid var(--line); color:var(--muted); }
+    .game.box:hover { border-color: var(--hot); }
+    .game.box .ico, .game.box h2 { color: var(--hot); }
+    .game.rap:hover { border-color: var(--pink); }
+    .game.rap .ico, .game.rap h2 { color: var(--pink); }
+    .play { display:inline-block; margin-top:6px; font-weight:900; letter-spacing:1px; text-transform:uppercase; }
+    .game.box .play { color: var(--hot); } .game.rap .play { color: var(--pink); }
+    .ribbon { position:absolute; top:14px; right:-34px; transform: rotate(45deg); background:var(--gold); color:#1a1400;
+      font-weight:900; font-size:11px; letter-spacing:1px; padding:5px 40px; }
+    footer { text-align:center; color:var(--muted); font-size:12px; margin-top:40px; }
+  </style>
 </head>
 <body>
-  <div class="spotlight"></div>
-  <main class="stage">
+  <div class="wrap">
+    <div class="brand">
+      <div class="kicker">EVIL ARCADE PRESENTS</div>
+      <h1>PICK&nbsp;YOUR&nbsp;FIGHT</h1>
+      <div class="sub">two browser games · no installs · nothing leaves your device</div>
+    </div>
 
-    <!-- ===== HOME ===== -->
-    <section id="screen-home" class="screen active">
-      <div class="brand">
-        <div class="brand-kicker">PRESENTS A LIVE</div>
-        <h1 class="logo">RAP&nbsp;BATTLE</h1>
-        <div class="brand-sub">open the mic · hit the words · land the punchline</div>
-      </div>
+    <div class="games">
+      <a class="game box" href="shadow-boxer/index.html">
+        <div class="ribbon">NEW</div>
+        <div class="ico">🥊</div>
+        <h2>Shadow Boxer Ultimate</h2>
+        <p>Camera shadow-boxing. Throw real punches at the targets, hold still to block, lean to slip. Queue against bots, KO them, fight friends, do quests for SPIN, and drip out in styles, glove filters &amp; KO effects.</p>
+        <div class="tags"><span class="tag">📷 CAMERA</span><span class="tag">🤖 BOTS</span><span class="tag">🤝 FRIENDS</span><span class="tag">🧤 COSMETICS</span></div>
+        <span class="play">Step in the ring ▶</span>
+      </a>
 
-      <div class="panel">
-        <div class="panel-label">DIFFICULTY</div>
-        <div class="diff-row">
-          <button class="diff-btn" data-diff="easy"><b>EASY</b><small>slow · 2 words</small></button>
-          <button class="diff-btn sel" data-diff="normal"><b>NORMAL</b><small>steady · 3 words</small></button>
-          <button class="diff-btn" data-diff="hard"><b>HARD</b><small>fast · 5 words</small></button>
-        </div>
+      <a class="game rap" href="rap-battle/index.html">
+        <div class="ico">🎤</div>
+        <h2>Rap Battle</h2>
+        <p>Freestyle to a live-synthesized beat. Hit the words as the bars scroll by, land the punchline, and let the AI judge score your accuracy, beat and lyrical skill.</p>
+        <div class="tags"><span class="tag">🎙️ MIC</span><span class="tag">🥁 BEAT</span><span class="tag">⚔️ 1V1</span></div>
+        <span class="play">Grab the mic ▶</span>
+      </a>
+    </div>
 
-        <div class="panel-label">MODE</div>
-        <div class="mode-row">
-          <button class="mode-btn" data-mode="solo"><span class="mb-ico">🎤</span><b>SOLO CYPHER</b><small>just you vs the beat</small></button>
-          <button class="mode-btn" data-mode="1v1"><span class="mb-ico">⚔️</span><b>1V1 LOCAL</b><small>pass-the-mic battle</small></button>
-          <button class="mode-btn" data-mode="custom"><span class="mb-ico">✏️</span><b>CUSTOM</b><small>set words for a friend</small></button>
-        </div>
-      </div>
-
-      <p id="sr-status" class="status"></p>
-    </section>
-
-    <!-- ===== CUSTOM ===== -->
-    <section id="screen-custom" class="screen">
-      <h2 class="head">CUSTOM CHALLENGE</h2>
-      <p class="lead">Type words separated by spaces. The <b>last word</b> becomes the
-        <b>punchline</b> they must rhyme with. Then pass the device — surprise them.</p>
-      <input id="custom-input" class="textfield" type="text" autocomplete="off"
-        placeholder="e.g.  midnight hustle dragon empire" />
-      <div id="custom-preview" class="custom-preview"><span class="muted">your words appear here…</span></div>
-      <p id="custom-error" class="error"></p>
-      <div class="row">
-        <button id="btn-custom-go" class="btn">SET &amp; PASS ▶</button>
-        <button id="btn-custom-back" class="btn ghost">← BACK</button>
-      </div>
-    </section>
-
-    <!-- ===== READY ===== -->
-    <section id="screen-ready" class="screen">
-      <div class="ready-card">
-        <h2 id="ready-title" class="ready-title">READY</h2>
-        <p id="ready-sub" class="ready-sub"></p>
-        <button id="btn-go" class="btn big">GO ▶</button>
-      </div>
-    </section>
-
-    <!-- ===== PLAY ===== -->
-    <section id="screen-play" class="screen">
-      <header class="play-head">
-        <span id="performer" class="chip hot">VERSE</span>
-        <span id="diff-chip" class="chip">NORMAL</span>
-        <span id="bar-indicator" class="chip">BAR 1 / 5</span>
-        <span id="mic-status" class="chip">🎤</span>
-      </header>
-
-      <div id="lane-wrap" class="lane-wrap">
-        <div id="target-line" class="target-line"></div>
-        <div id="lane" class="lane"></div>
-        <div class="lane-fade left"></div>
-        <div class="lane-fade right"></div>
-      </div>
-
-      <div id="checklist" class="checklist"></div>
-
-      <div id="booth" class="booth">
-        <div id="countdown" class="countdown hidden">3</div>
-        <div id="beat-bars" class="eqwrap">
-          <i class="eq"></i><i class="eq"></i><i class="eq"></i><i class="eq"></i>
-          <i class="eq"></i><i class="eq"></i><i class="eq"></i><i class="eq"></i>
-          <i class="eq"></i><i class="eq"></i><i class="eq"></i><i class="eq"></i>
-        </div>
-
-        <div class="meters">
-          <div class="meter"><label>MIC</label><div class="track"><div id="mic-fill" class="fill mic"></div></div></div>
-          <div class="meter"><label>BEAT</label><div class="track"><div id="progress-fill" class="fill prog"></div></div></div>
-        </div>
-
-        <div id="transcript" class="transcript">…</div>
-        <textarea id="type-fallback" class="type-fallback hidden"
-          placeholder="Type your bars here…"></textarea>
-
-        <button id="btn-stop" class="btn stop hidden">⏹ END VERSE</button>
-      </div>
-    </section>
-
-    <!-- ===== RESULT ===== -->
-    <section id="screen-result" class="screen">
-      <div id="result-card" class="result-card" data-tier="ok">
-        <div class="rank">
-          <span id="rank-emoji" class="rank-emoji">🎤</span>
-          <span id="rank-name" class="rank-name">MC</span>
-        </div>
-        <div class="overall"><div id="overall-score" class="overall-num">0</div><div class="overall-label">OVERALL</div></div>
-        <div class="scores">
-          <div class="score-row"><span class="score-name">🎯 ACCURACY</span><div class="track"><div id="acc-fill" class="fill s-acc"></div></div><span id="acc-val" class="score-val">0</span></div>
-          <div class="score-row"><span class="score-name">🥁 BEAT</span><div class="track"><div id="beat-fill" class="fill s-beat"></div></div><span id="beat-val" class="score-val">0</span></div>
-          <div class="score-row"><span class="score-name">✍️ LYRICAL</span><div class="track"><div id="lyr-fill" class="fill s-lyr"></div></div><span id="lyr-val" class="score-val">0</span></div>
-        </div>
-        <p id="quip" class="quip"></p>
-        <ul id="recap" class="recap"></ul>
-        <div class="row center">
-          <button id="btn-again" class="btn">🔁 RUN IT BACK</button>
-          <button id="btn-home" class="btn ghost">🏠 HOME</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== VERSUS ===== -->
-    <section id="screen-versus" class="screen">
-      <div id="versus-card" class="versus-card">
-        <h2 id="vs-winner" class="vs-winner">RESULT</h2>
-        <div class="vs-grid">
-          <div class="vs-side s1">
-            <div class="vs-name">PLAYER 1</div>
-            <div id="vs-p1-score" class="vs-score">0</div>
-            <div id="vs-p1-rank" class="vs-rank"></div>
-          </div>
-          <div class="vs-mid">VS</div>
-          <div class="vs-side s2">
-            <div class="vs-name">PLAYER 2</div>
-            <div id="vs-p2-score" class="vs-score">0</div>
-            <div id="vs-p2-rank" class="vs-rank"></div>
-          </div>
-        </div>
-        <div class="row center">
-          <button id="btn-rematch" class="btn">⚔️ REMATCH</button>
-          <button id="btn-vs-home" class="btn ghost">🏠 HOME</button>
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <script src="js/words.js"></script>
-  <script src="js/audio.js"></script>
-  <script src="js/speech.js"></script>
-  <script src="js/score.js"></script>
-  <script src="js/game.js"></script>
+    <footer>Best in Chrome / Edge · allow camera &amp; mic for the full experience</footer>
+  </div>
 </body>
 </html>

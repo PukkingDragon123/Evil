@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>SHADOW BOXER ULTIMATE</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <main class="stage">
+
+    <!-- ===================== HOME ===================== -->
+    <section id="screen-home" class="screen active">
+      <header class="topbar">
+        <div class="belt"><span id="belt-emoji">🥋</span><div><b id="belt-name">Amateur</b><small id="rank-next"></small></div></div>
+        <div class="spin-pill">🪙 <span class="spin-amount">0</span> <i>SPIN</i></div>
+      </header>
+
+      <div class="brand">
+        <div class="brand-kicker">CAMERA SHADOW-BOXING</div>
+        <h1 class="logo">SHADOW<span>BOXER</span></h1>
+        <div class="brand-sub">throw hands · slip · block · KO · style on 'em</div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-label">DIFFICULTY</div>
+        <div class="diff-row">
+          <button class="diff-btn" data-diff="rookie"><b>ROOKIE</b><small>slow · forgiving</small></button>
+          <button class="diff-btn sel" data-diff="pro"><b>PRO</b><small>real pressure</small></button>
+          <button class="diff-btn" data-diff="champ"><b>CHAMP</b><small>fast · brutal</small></button>
+        </div>
+
+        <div class="mode-grid">
+          <button id="btn-quick" class="mode-btn primary"><span class="mb-ico">🥊</span><b>QUICK FIGHT</b><small>queue · face a bot · KO them</small></button>
+          <button id="btn-train" class="mode-btn"><span class="mb-ico">🎯</span><b>TRAIN</b><small>hit the bag · build combos</small></button>
+          <button id="btn-friends" class="mode-btn"><span class="mb-ico">🤝</span><b>FIGHT FRIENDS</b><small>pass-the-camera · top score wins</small></button>
+          <button id="btn-shop" class="mode-btn"><span class="mb-ico">🧤</span><b>STYLE &amp; GEAR</b><small>styles · gloves · KO FX · arenas</small></button>
+          <button id="btn-quests" class="mode-btn"><span class="mb-ico">📋</span><b>QUESTS</b><small>earn SPIN</small><i id="quest-badge" class="badge hidden"></i></button>
+        </div>
+      </div>
+
+      <details class="settings">
+        <summary>⚙️ Settings</summary>
+        <div class="set-row"><label>Fighter name</label><input id="set-name" class="textfield" maxlength="14" /></div>
+        <div class="set-row"><label>Camera sensitivity</label><input id="set-sens" type="range" min="0.5" max="1.8" step="0.05" /></div>
+        <div class="set-row"><label>Sound</label><input id="set-sound" type="checkbox" /></div>
+        <div class="set-row"><button id="btn-reset" class="btn ghost small">Reset progress</button></div>
+      </details>
+
+      <p class="footnote">Best in Chrome/Edge. Allow camera for the real thing — no camera? Keyboard works too. Nothing leaves your device.</p>
+    </section>
+
+    <!-- ===================== SHOP ===================== -->
+    <section id="screen-shop" class="screen">
+      <header class="topbar">
+        <button id="shop-back" class="btn ghost small">← HOME</button>
+        <h2 class="head">STYLE &amp; GEAR</h2>
+        <div class="spin-pill">🪙 <span class="spin-amount">0</span> <i>SPIN</i></div>
+      </header>
+      <div class="shop-tabs">
+        <button class="shop-tab sel" data-cat="styles">🥊 STYLES</button>
+        <button class="shop-tab" data-cat="gloves">🧤 GLOVES</button>
+        <button class="shop-tab" data-cat="kofx">💥 KO FX</button>
+        <button class="shop-tab" data-cat="arenas">🏟️ ARENAS</button>
+      </div>
+      <div id="shop-grid" class="shop-grid"></div>
+    </section>
+
+    <!-- ===================== QUESTS ===================== -->
+    <section id="screen-quests" class="screen">
+      <header class="topbar">
+        <button id="quests-back" class="btn ghost small">← HOME</button>
+        <h2 class="head">QUESTS</h2>
+        <div class="spin-pill">🪙 <span class="spin-amount">0</span> <i>SPIN</i></div>
+      </header>
+      <p class="lead">Complete challenges to earn <b>SPIN</b>, then buy boxing styles &amp; cosmetics. Daily quests reset every day.</p>
+      <div id="quest-list" class="quest-list"></div>
+    </section>
+
+    <!-- ===================== MATCHMAKING ===================== -->
+    <section id="screen-matchmaking" class="screen">
+      <div class="mm-wrap">
+        <div id="mm-spinner" class="mm-spinner"></div>
+        <h2 id="mm-status" class="mm-status">Searching the gym…</h2>
+        <div id="mm-ping" class="mm-ping">ping —</div>
+
+        <div id="mm-card" class="mm-card hidden">
+          <div class="mm-vs">OPPONENT</div>
+          <div id="mm-tag" class="mm-tag">—</div>
+          <div id="mm-style" class="mm-style">—</div>
+          <div id="mm-mmr" class="mm-mmr">MMR —</div>
+          <div id="mm-taunt" class="mm-taunt">—</div>
+        </div>
+
+        <div class="row center">
+          <button id="mm-fight" class="btn big hidden">ENTER THE RING ▶</button>
+          <button id="mm-cancel" class="btn ghost">CANCEL</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== FRIENDS SETUP ===================== -->
+    <section id="screen-friends" class="screen">
+      <h2 class="head center">FIGHT FRIENDS</h2>
+      <p class="lead center">Pass-the-camera. Both fighters face the <b>same opponent &amp; same sequence</b> — highest score takes it.</p>
+      <div class="panel narrow">
+        <div class="set-row"><label>Player 1</label><input id="fr-p1" class="textfield" maxlength="14" placeholder="PLAYER 1" /></div>
+        <div class="set-row"><label>Player 2</label><input id="fr-p2" class="textfield" maxlength="14" placeholder="PLAYER 2" /></div>
+        <div class="row center">
+          <button id="fr-go" class="btn big">START ▶</button>
+          <button id="fr-back" class="btn ghost">← BACK</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== FIGHT ===================== -->
+    <section id="screen-fight" class="screen">
+      <canvas id="cam" class="cam"></canvas>
+      <div id="hit-flash" class="hit-flash"></div>
+
+      <!-- top HUD -->
+      <div class="fight-hud">
+        <div class="fighter p">
+          <div class="f-name" id="p-name">YOU</div>
+          <div class="hpbar"><div id="p-hp" class="hp p"></div></div>
+        </div>
+        <div class="round-info">
+          <div id="round-time" class="r-time">40</div>
+          <div id="round-num" class="r-num">R1/3</div>
+        </div>
+        <div class="fighter o">
+          <div class="f-name" id="o-name">BOT</div>
+          <div class="hpbar rev"><div id="o-hp" class="hp o"></div></div>
+        </div>
+      </div>
+
+      <div id="combo" class="combo">0× COMBO</div>
+      <div class="hype"><div class="hype-track"><div id="hype-fill" class="hype-fill"></div></div><span>HYPE</span></div>
+
+      <!-- cue + fx layers -->
+      <div id="cues" class="cues"></div>
+      <div id="float-layer" class="float-layer"></div>
+
+      <div id="round-banner" class="round-banner">ROUND 1</div>
+      <div id="count" class="count hidden">3</div>
+
+      <!-- KO overlay -->
+      <div id="ko-overlay" class="ko-overlay hidden">
+        <div id="ko-fx" class="ko-fx"></div>
+        <div id="ko-word" class="ko-word">K.O.!</div>
+      </div>
+
+      <!-- manual controls (no-camera fallback) -->
+      <div id="controls" class="controls hidden">
+        <button class="ctl" data-act="slipL">◀ SLIP</button>
+        <button class="ctl jab" data-act="left">JAB</button>
+        <button class="ctl guard" data-act="guard">🛡️ GUARD</button>
+        <button class="ctl cross" data-act="right">CROSS</button>
+        <button class="ctl" data-act="slipR">SLIP ▶</button>
+      </div>
+
+      <!-- prefight overlay -->
+      <div id="prefight" class="prefight">
+        <div class="pf-card">
+          <h2 id="pf-title" class="pf-title">TITLE FIGHT</h2>
+          <div id="pf-vs" class="pf-vs"></div>
+          <p id="pf-sub" class="pf-sub">Starting camera…</p>
+          <p id="pf-tip" class="pf-tip"></p>
+          <button id="pf-go" class="btn big" disabled>GET READY ▶</button>
+        </div>
+      </div>
+
+      <button id="btn-quit" class="btn-quit">✕</button>
+    </section>
+
+    <!-- ===================== RESULT ===================== -->
+    <section id="screen-result" class="screen">
+      <div class="result-card">
+        <div id="res-emoji" class="res-emoji">🏆</div>
+        <h2 id="res-title" class="res-title" data-win="1">VICTORY</h2>
+        <p id="res-sub" class="res-sub"></p>
+        <div class="res-nums">
+          <div class="res-num"><div id="res-score" class="res-big">0</div><div class="res-cap">SCORE</div></div>
+          <div class="res-num"><div id="res-spin" class="res-big gold">🪙 +0</div><div class="res-cap">SPIN EARNED</div></div>
+        </div>
+        <ul id="res-recap" class="recap"></ul>
+        <p id="res-quests" class="res-quests hidden"></p>
+        <div class="row center">
+          <button id="btn-again" class="btn">🔁 REMATCH</button>
+          <button id="btn-result-home" class="btn ghost">🏠 HOME</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== FRIENDS RESULT ===================== -->
+    <section id="screen-friendsresult" class="screen">
+      <div id="fres-card" class="versus-card">
+        <h2 id="fres-title" class="vs-winner">RESULT</h2>
+        <div class="vs-grid">
+          <div class="vs-side s1">
+            <div id="fres-p1name" class="vs-name">PLAYER 1</div>
+            <div id="fres-p1score" class="vs-score">0</div>
+          </div>
+          <div class="vs-mid">VS</div>
+          <div class="vs-side s2">
+            <div id="fres-p2name" class="vs-name">PLAYER 2</div>
+            <div id="fres-p2score" class="vs-score">0</div>
+          </div>
+        </div>
+        <div class="row center">
+          <button id="btn-fr-rematch" class="btn">⚔️ REMATCH</button>
+          <button id="btn-fr-home" class="btn ghost">🏠 HOME</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="js/data.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/vision.js"></script>
+  <script src="js/quests.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
