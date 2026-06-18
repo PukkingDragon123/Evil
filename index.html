@@ -3,35 +3,48 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RAP BATTLE — Freestyle to the Beat</title>
+  <title>RAP BATTLE — Bars on the Block</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Permanent+Marker&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
+  <div class="brickwall"></div>
+  <div class="grime"></div>
   <div class="spotlight"></div>
+  <!-- spray-paint graffiti tags -->
+  <span class="tag tag1">SKRRT</span>
+  <span class="tag tag2">YEAH!</span>
+  <span class="tag tag3">no cap</span>
+  <span class="tag tag4">BRRR</span>
+
   <main class="stage">
 
     <!-- ===== HOME ===== -->
     <section id="screen-home" class="screen active">
       <div class="brand">
-        <div class="brand-kicker">PRESENTS A LIVE</div>
-        <h1 class="logo">RAP&nbsp;BATTLE</h1>
-        <div class="brand-sub">open the mic · hit the words · land the punchline</div>
+        <div class="advisory">PARENTAL ADVISORY<small>EXPLICIT BARS</small></div>
+        <h1 class="logo">RAP BATTLE</h1>
+        <div class="tape">🎤 LIVE ON THE BLOCK • SPIT YA BARS • NO CAP • 🎤 LIVE ON THE BLOCK • SPIT YA BARS •</div>
       </div>
 
       <div class="panel">
-        <div class="panel-label">DIFFICULTY</div>
+        <div class="panel-label">⚙️ DIFFICULTY</div>
         <div class="diff-row">
           <button class="diff-btn" data-diff="easy"><b>EASY</b><small>slow · 2 words</small></button>
           <button class="diff-btn sel" data-diff="normal"><b>NORMAL</b><small>steady · 3 words</small></button>
           <button class="diff-btn" data-diff="hard"><b>HARD</b><small>fast · 5 words</small></button>
         </div>
 
-        <div class="panel-label">MODE</div>
+        <div class="panel-label">🎮 MODE</div>
         <div class="mode-row">
           <button class="mode-btn" data-mode="solo"><span class="mb-ico">🎤</span><b>SOLO CYPHER</b><small>just you vs the beat</small></button>
-          <button class="mode-btn" data-mode="1v1"><span class="mb-ico">⚔️</span><b>1V1 LOCAL</b><small>pass-the-mic battle</small></button>
+          <button class="mode-btn" data-mode="1v1"><span class="mb-ico">⚔️</span><b>1V1 BEEF</b><small>pass-the-mic battle</small></button>
           <button class="mode-btn" data-mode="custom"><span class="mb-ico">✏️</span><b>CUSTOM</b><small>set words for a friend</small></button>
         </div>
+
+        <button id="btn-board" class="btn gold wide">🏆 LEADERBOARD</button>
       </div>
 
       <p id="sr-status" class="status"></p>
@@ -40,10 +53,10 @@
     <!-- ===== CUSTOM ===== -->
     <section id="screen-custom" class="screen">
       <h2 class="head">CUSTOM CHALLENGE</h2>
-      <p class="lead">Type words separated by spaces. The <b>last word</b> becomes the
-        <b>punchline</b> they must rhyme with. Then pass the device — surprise them.</p>
+      <p class="lead">Type words separated by spaces. The <b>last word</b> is the
+        <b>punchline</b> they gotta rhyme with. Then pass the phone — catch 'em slippin.</p>
       <input id="custom-input" class="textfield" type="text" autocomplete="off"
-        placeholder="e.g.  midnight hustle dragon empire" />
+        placeholder="e.g.  midnight spaghetti dragon empire" />
       <div id="custom-preview" class="custom-preview"><span class="muted">your words appear here…</span></div>
       <p id="custom-error" class="error"></p>
       <div class="row">
@@ -86,16 +99,12 @@
           <i class="eq"></i><i class="eq"></i><i class="eq"></i><i class="eq"></i>
           <i class="eq"></i><i class="eq"></i><i class="eq"></i><i class="eq"></i>
         </div>
-
         <div class="meters">
           <div class="meter"><label>MIC</label><div class="track"><div id="mic-fill" class="fill mic"></div></div></div>
           <div class="meter"><label>BEAT</label><div class="track"><div id="progress-fill" class="fill prog"></div></div></div>
         </div>
-
         <div id="transcript" class="transcript">…</div>
-        <textarea id="type-fallback" class="type-fallback hidden"
-          placeholder="Type your bars here…"></textarea>
-
+        <textarea id="type-fallback" class="type-fallback hidden" placeholder="Type your bars here…"></textarea>
         <button id="btn-stop" class="btn stop hidden">⏹ END VERSE</button>
       </div>
     </section>
@@ -115,8 +124,16 @@
         </div>
         <p id="quip" class="quip"></p>
         <ul id="recap" class="recap"></ul>
+
+        <div class="save-row">
+          <input id="tag-input" class="tag-input" type="text" maxlength="14" placeholder="YOUR MC TAG" />
+          <button id="btn-save-score" class="btn gold">💾 SAVE</button>
+        </div>
+        <p id="save-msg" class="save-msg"></p>
+
         <div class="row center">
           <button id="btn-again" class="btn">🔁 RUN IT BACK</button>
+          <button id="btn-view-board" class="btn ghost">🏆 BOARD</button>
           <button id="btn-home" class="btn ghost">🏠 HOME</button>
         </div>
       </div>
@@ -128,21 +145,35 @@
         <h2 id="vs-winner" class="vs-winner">RESULT</h2>
         <div class="vs-grid">
           <div class="vs-side s1">
-            <div class="vs-name">PLAYER 1</div>
+            <input id="vs-p1-name-input" class="vs-name-input" type="text" maxlength="14" value="Player 1" />
             <div id="vs-p1-score" class="vs-score">0</div>
             <div id="vs-p1-rank" class="vs-rank"></div>
           </div>
           <div class="vs-mid">VS</div>
           <div class="vs-side s2">
-            <div class="vs-name">PLAYER 2</div>
+            <input id="vs-p2-name-input" class="vs-name-input" type="text" maxlength="14" value="Player 2" />
             <div id="vs-p2-score" class="vs-score">0</div>
             <div id="vs-p2-rank" class="vs-rank"></div>
           </div>
         </div>
         <div class="row center">
+          <button id="btn-vs-save" class="btn gold">💾 SAVE BOTH</button>
           <button id="btn-rematch" class="btn">⚔️ REMATCH</button>
           <button id="btn-vs-home" class="btn ghost">🏠 HOME</button>
         </div>
+        <p id="vs-save-msg" class="save-msg"></p>
+      </div>
+    </section>
+
+    <!-- ===== LEADERBOARD ===== -->
+    <section id="screen-board" class="screen">
+      <h2 class="head">🏆 LEADERBOARD</h2>
+      <p class="lead">Top bars on this device. Climb the block.</p>
+      <ol id="board-list" class="board-list"></ol>
+      <p id="board-empty" class="muted hidden">No scores yet — go spit something. 🎤</p>
+      <div class="row center">
+        <button id="btn-board-home" class="btn">🏠 HOME</button>
+        <button id="btn-board-clear" class="btn ghost">🗑️ CLEAR</button>
       </div>
     </section>
 
@@ -152,6 +183,7 @@
   <script src="js/audio.js"></script>
   <script src="js/speech.js"></script>
   <script src="js/score.js"></script>
+  <script src="js/leaderboard.js"></script>
   <script src="js/game.js"></script>
 </body>
 </html>

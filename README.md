@@ -19,6 +19,13 @@ Web Speech API.
 …each at three difficulties — **Easy / Normal / Hard** — which change the BPM,
 the number of bars, how many required words you get, and how strict the judge is.
 
+## Leaderboard
+
+Scores save to a **local leaderboard** (stored in your browser via
+`localStorage`). Drop your MC tag after a solo/custom verse, or save both
+players after a 1v1, and climb the board on the 🏆 screen. It's per-device — no
+account, no network.
+
 ## How to play
 
 1. Pick a **difficulty** and a **mode** on the home screen, then allow mic access.

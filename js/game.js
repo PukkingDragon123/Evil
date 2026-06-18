@@ -20,6 +20,9 @@
     customWords: [],
     lane: { stride: 160, blockW: 140, center: 0, count: 0 },
     vs: { p1: 0, p2: 0, r1: null, r2: null, turn: 1 },
+    lastResult: null,
+    saved: false,
+    vsSaved: false,
   };
 
   function show(screen) {
@@ -72,6 +75,17 @@
       if (state.mode === 'custom') show('custom');
       else runSolo();
     });
+
+    // leaderboard
+    $('btn-board').addEventListener('click', () => { renderBoard(); show('board'); });
+    $('btn-view-board').addEventListener('click', () => { renderBoard(); show('board'); });
+    $('btn-board-home').addEventListener('click', () => show('home'));
+    $('btn-board-clear').addEventListener('click', () => {
+      if (confirm('Clear the whole leaderboard?')) { RB.leaderboard.clear(); renderBoard(); }
+    });
+    $('btn-save-score').addEventListener('click', saveResult);
+    $('btn-vs-save').addEventListener('click', saveVersus);
+
     window.addEventListener('resize', () => { if ($('screen-play').classList.contains('active')) measureLane(); });
   }
 
@@ -329,6 +343,11 @@
   }
 
   function showResult(r) {
+    state.lastResult = r;
+    state.saved = false;
+    $('tag-input').value = RB.leaderboard.lastTag();
+    $('save-msg').textContent = '';
+    $('btn-save-score').disabled = false;
     $('rank-emoji').textContent = r.rank.emoji;
     $('rank-name').textContent = r.rank.name;
     $('result-card').dataset.tier = r.rank.tier;
@@ -350,8 +369,53 @@
     show('result');
   }
 
+  // ---------- leaderboard ----------
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+  const medal = (i) => ['🥇', '🥈', '🥉'][i] || (i + 1) + '.';
+  const modeBadge = (m) => ({ solo: 'SOLO', '1v1': '1V1', custom: 'CUSTOM' }[m] || m.toUpperCase());
+
+  function renderBoard() {
+    const list = RB.leaderboard.top(10);
+    $('board-list').innerHTML = list.map((e, i) => `
+      <li class="board-row${i < 3 ? ' top' : ''}">
+        <span class="br-rank">${medal(i)}</span>
+        <span class="br-name">${escapeHtml(e.name)}</span>
+        <span class="br-tags"><i class="bt d-${e.difficulty}">${String(e.difficulty).toUpperCase()}</i><i class="bt">${modeBadge(e.mode)}</i></span>
+        <span class="br-score">${e.score}</span>
+      </li>`).join('');
+    $('board-empty').classList.toggle('hidden', list.length > 0);
+  }
+
+  function saveResult() {
+    if (state.saved || !state.lastResult) return;
+    if (!RB.leaderboard.available()) { $('save-msg').textContent = '⚠️ Saving off (private browsing).'; return; }
+    const name = ($('tag-input').value || '').trim() || 'MC';
+    RB.leaderboard.setTag(name);
+    const rank = RB.leaderboard.add({ name, score: state.lastResult.overall, mode: state.mode, difficulty: state.round.difficulty });
+    state.saved = true;
+    $('btn-save-score').disabled = true;
+    $('save-msg').textContent = `🔥 Saved — #${rank} on the block!`;
+  }
+
+  function saveVersus() {
+    if (state.vsSaved) return;
+    if (!RB.leaderboard.available()) { $('vs-save-msg').textContent = '⚠️ Saving off (private browsing).'; return; }
+    const n1 = ($('vs-p1-name-input').value || '').trim() || 'Player 1';
+    const n2 = ($('vs-p2-name-input').value || '').trim() || 'Player 2';
+    RB.leaderboard.add({ name: n1, score: state.vs.p1, mode: '1v1', difficulty: state.difficulty });
+    RB.leaderboard.add({ name: n2, score: state.vs.p2, mode: '1v1', difficulty: state.difficulty });
+    state.vsSaved = true;
+    $('btn-vs-save').disabled = true;
+    $('vs-save-msg').textContent = '🔥 Both scores saved to the board!';
+  }
+
   // ---------- versus ----------
   function showVersus() {
+    state.vsSaved = false;
+    $('btn-vs-save').disabled = false;
+    $('vs-save-msg').textContent = '';
     const { p1, p2, r1, r2 } = state.vs;
     animateNum($('vs-p1-score'), p1);
     animateNum($('vs-p2-score'), p2);

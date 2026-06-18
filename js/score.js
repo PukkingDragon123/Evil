@@ -171,28 +171,28 @@
 
   // ---------- rank + crowd quip ----------
   function rankFor(overall) {
-    if (overall >= 90) return { name: 'LEGENDARY', emoji: '👑', tier: 'legend' };
-    if (overall >= 78) return { name: 'FIRE MC', emoji: '🔥', tier: 'fire' };
-    if (overall >= 62) return { name: 'SOLID SPITTER', emoji: '🎤', tier: 'good' };
-    if (overall >= 45) return { name: 'UP & COMER', emoji: '⚡', tier: 'ok' };
-    if (overall >= 25) return { name: 'ROOKIE', emoji: '🌱', tier: 'rookie' };
-    return { name: 'STAGE FRIGHT', emoji: '😬', tier: 'low' };
+    if (overall >= 90) return { name: 'G.O.A.T. 🐐', emoji: '👑', tier: 'legend' };
+    if (overall >= 78) return { name: 'CERTIFIED HEAT', emoji: '🔥', tier: 'fire' };
+    if (overall >= 62) return { name: 'BLOCK STAR', emoji: '🎤', tier: 'good' };
+    if (overall >= 45) return { name: 'YOUNG SPITTA', emoji: '⚡', tier: 'ok' };
+    if (overall >= 25) return { name: 'BENCH WARMER', emoji: '🌱', tier: 'rookie' };
+    return { name: 'STAGE FRIGHT', emoji: '💀', tier: 'low' };
   }
 
   function quipFor(overall, parts) {
     const lines = {
-      legend: ['The crowd lost their minds. Hall of fame bar! 👑', 'Mic drop. Nobody is following that.'],
-      fire: ['Crowd is on their feet — that was heat! 🔥', 'You set the booth on fire with that one.'],
-      good: ['Solid set! The crowd is bobbing their heads.', 'Clean bars — you held the stage.'],
-      ok: ['Not bad! Tighten the rhymes and you got next.', "There's potential — keep grinding."],
-      rookie: ['Rough around the edges, but you stepped up.', 'Everybody starts somewhere. Run it back!'],
-      low: ['The beat ran away with that one... try again! 😅', 'Shake off the nerves and grab the mic again.'],
+      legend: ['Ayo that was STUPID 🔥 hall-of-fame bar, no cap.', 'Crowd went brazy — you BODIED that fr fr 👑', 'Mic drop. Somebody call a medic, you murdered it 💀'],
+      fire: ['That was COLD 🥶 whole crowd on they feet!', 'Bars went dumb 🔥 you cooked the beat.', 'No cap that was heat — run it back!'],
+      good: ['Solid set! Heads was bobbin all the way.', 'Clean bars — block approved 🎤', 'You held the cypher down, respect.'],
+      ok: ['Aight aight, lil shaky but you got sauce.', 'Some heat, some air balls — keep grindin.', 'You was buffering a lil 😅 but the sauce is there.'],
+      rookie: ['Rough, but you stepped to the mic — respect.', 'Stay in the lab, it gon come 🌱', 'Everybody start somewhere, fam.'],
+      low: ['The beat ran off without you 💀 run it back!', 'Stage fright caught you slippin — shake it off!', 'That was... a freestyle 😬 try again, champ.'],
     };
     const tier = rankFor(overall).tier;
     const pool = lines[tier];
     let q = pool[Math.floor(Math.random() * pool.length)];
     if (parts && parts.lyrical && parts.lyrical.rhymeHits >= 2) {
-      q += ` (${parts.lyrical.rhymeHits} punchline rhymes landed!)`;
+      q += ` (${parts.lyrical.rhymeHits} rhymes landed, sheesh!)`;
     }
     return q;
   }
