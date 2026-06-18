@@ -157,8 +157,8 @@ export function createGarden(pondRadius) {
   lip.position.y = 0.02;
   group.add(lip);
 
-  // Rocks: a ring around the rim, plus a few wading in the shallows.
-  const rockCount = 12;
+  // Rocks: a sparse ring around the rim, plus a couple wading in the shallows.
+  const rockCount = 7;
   for (let i = 0; i < rockCount; i++) {
     const a = (i / rockCount) * Math.PI * 2 + Math.random() * 0.4;
     const inWater = i % 4 === 0;
@@ -172,16 +172,27 @@ export function createGarden(pondRadius) {
     group.add(rock);
   }
 
-  // Reed clusters at a couple of spots.
-  for (let i = 0; i < 3; i++) {
+  // A single quiet reed cluster.
+  {
     const a = Math.random() * Math.PI * 2;
-    const reeds = makeReeds(5 + Math.floor(Math.random() * 4));
+    const reeds = makeReeds(5);
     reeds.position.set(Math.cos(a) * (pondRadius + 2.5), -0.1, Math.sin(a) * (pondRadius + 2.5));
     group.add(reeds);
   }
 
-  // Ambient trees & bushes ringing the garden (lush by default).
-  const flora = ['maple', 'pine', 'maple', 'pine', 'bush', 'bush', 'maple'];
+  // A pair of stone lanterns facing the pond — a calm Japanese accent.
+  for (const ang of [Math.PI * 0.25, Math.PI * 1.25]) {
+    const lantern = buildDecoration('lantern');
+    if (lantern) {
+      lantern.position.set(Math.cos(ang) * (pondRadius + 2.4), -0.05, Math.sin(ang) * (pondRadius + 2.4));
+      lantern.scale.setScalar(1.15);
+      lantern.traverse((o) => { if (o.isMesh) o.castShadow = true; });
+      group.add(lantern);
+    }
+  }
+
+  // Ambient trees & bushes ringing the garden (calm, not crowded).
+  const flora = ['maple', 'pine', 'maple', 'pine', 'bush'];
   flora.forEach((type, i) => {
     const a = (i / flora.length) * Math.PI * 2 + Math.random() * 0.5;
     const rad = pondRadius + 4 + Math.random() * 4;

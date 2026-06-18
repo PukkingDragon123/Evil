@@ -80,8 +80,8 @@ export function createUnderwater(pondRadius) {
   floor.receiveShadow = true;
   group.add(floor);
 
-  // pebbles
-  for (let i = 0; i < 46; i++) {
+  // pebbles (sparse — calmer, cleaner bed)
+  for (let i = 0; i < 26; i++) {
     const a = Math.random() * Math.PI * 2, r = Math.random() * (pondRadius - 1);
     const p = pebble();
     p.position.set(Math.cos(a) * r, FLOOR_Y + 0.06, Math.sin(a) * r);
@@ -89,7 +89,7 @@ export function createUnderwater(pondRadius) {
   }
 
   // a few larger sunken rocks
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 4; i++) {
     const a = Math.random() * Math.PI * 2, r = pondRadius * (0.4 + Math.random() * 0.5);
     const rock = pebble();
     rock.scale.multiplyScalar(3 + Math.random() * 2);
@@ -98,7 +98,7 @@ export function createUnderwater(pondRadius) {
   }
 
   // water plants
-  for (let i = 0; i < 16; i++) {
+  for (let i = 0; i < 10; i++) {
     const a = Math.random() * Math.PI * 2, r = 2 + Math.random() * (pondRadius - 3);
     const pl = waterPlant();
     pl.position.set(Math.cos(a) * r, FLOOR_Y, Math.sin(a) * r);

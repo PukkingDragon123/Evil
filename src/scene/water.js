@@ -19,9 +19,9 @@ const vertexShader = /* glsl */ `
   // Surface height as a sum of travelling sine waves.
   float waveH(vec2 q, float t) {
     float h = 0.0;
-    h += sin(q.x * 0.50 + t * 0.90) * 0.10;
-    h += sin(q.y * 0.42 - t * 0.70) * 0.09;
-    h += sin((q.x + q.y) * 0.33 + t * 1.30) * 0.05;
+    h += sin(q.x * 0.45 + t * 0.70) * 0.060;
+    h += sin(q.y * 0.38 - t * 0.55) * 0.055;
+    h += sin((q.x + q.y) * 0.30 + t * 1.00) * 0.030;
     return h;
   }
 
@@ -30,10 +30,10 @@ const vertexShader = /* glsl */ `
     float h = waveH(q, uTime);
 
     // Analytic slope -> normal (local space; +z is "up" before the mesh tilt).
-    float dHdx = 0.50 * cos(q.x * 0.50 + uTime * 0.90) * 0.10
-               + 0.33 * cos((q.x + q.y) * 0.33 + uTime * 1.30) * 0.05;
-    float dHdy = 0.42 * cos(q.y * 0.42 - uTime * 0.70) * 0.09
-               + 0.33 * cos((q.x + q.y) * 0.33 + uTime * 1.30) * 0.05;
+    float dHdx = 0.45 * cos(q.x * 0.45 + uTime * 0.70) * 0.060
+               + 0.30 * cos((q.x + q.y) * 0.30 + uTime * 1.00) * 0.030;
+    float dHdy = 0.38 * cos(q.y * 0.38 - uTime * 0.55) * 0.055
+               + 0.30 * cos((q.x + q.y) * 0.30 + uTime * 1.00) * 0.030;
     vec3 nLocal = normalize(vec3(-dHdx, -dHdy, 1.0));
 
     vec4 displaced = vec4(position.x, position.y, h, 1.0);

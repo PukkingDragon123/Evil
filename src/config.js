@@ -5,21 +5,21 @@
 // =============================================================================
 
 export const CONFIG = {
-  // --- Economy -------------------------------------------------------------
-  startingCoins: 160,
+  // --- Economy (gentle & relaxing) -----------------------------------------
+  startingCoins: 250,
   startingCapacity: 6,
-  incomeBase: 0.035,            // gentle passive trickle; offers are the real money
+  incomeBase: 0.06,             // a kinder passive trickle
 
   // Pond capacity upgrades.
   capacityStep: 3,
-  capacityBaseCost: 140,
-  capacityCostGrowth: 1.6,
+  capacityBaseCost: 100,
+  capacityCostGrowth: 1.5,
   maxCapacity: 90,
 
-  // Breeding (cozy, deliberate).
-  breedCost: 18,
-  breedCooldownMs: 22000,
-  breedPreviewTrials: 260,      // Monte-Carlo samples for the breeding-cave odds
+  // Breeding (easy, unhurried).
+  breedCost: 12,
+  breedCooldownMs: 16000,
+  breedPreviewTrials: 260,
 
   // Offline income is granted on load, capped so it stays a treat.
   offlineCapMs: 2 * 60 * 60 * 1000,
@@ -28,23 +28,23 @@ export const CONFIG = {
   // --- Koi Market (3 random koi, refreshing on a timer) --------------------
   market: {
     size: 3,
-    refreshMs: 60000,
-    priceMult: 2.6,             // koi are dear — buying is a commitment
+    refreshMs: 75000,
+    priceMult: 2.0,             // koi are special, but not punishing
   },
 
-  // --- Buyers / offers -----------------------------------------------------
+  // --- Buyers / offers (no rush) -------------------------------------------
   offers: {
     max: 3,
-    intervalMs: 70000,          // a new visitor roughly this often
-    expireMs: 165000,
+    intervalMs: 80000,
+    expireMs: 220000,
     premiumMin: 1.8,
     premiumMax: 3.2,
   },
 
-  // --- Weather -------------------------------------------------------------
+  // --- Weather (slow, calm changes) ----------------------------------------
   weather: {
-    minMs: 42000,
-    maxMs: 95000,
+    minMs: 60000,
+    maxMs: 130000,
   },
 
   // --- Genetics ------------------------------------------------------------
@@ -61,7 +61,8 @@ export const CONFIG = {
   pondRadius: 18,
   swimDepth: -0.35,
   maxRenderedFish: 90,
-  fishSpeed: 0.7,               // global swim-speed scale (cozy = slow)
+  fishSpeed: 0.55,              // calm, gliding koi
+  koiOutline: true,            // clean stylised ink outline on the koi
 
   // --- Persistence ---------------------------------------------------------
   saveKey: 'pfits.save.v2',

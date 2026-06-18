@@ -93,6 +93,22 @@ export function createPondScene() {
   // --- world ---
   const garden = createGarden(POND_R);
   scene.add(garden.group);
+
+  // Distant low-poly hills — a calm Japanese horizon (softened by fog).
+  const hills = new THREE.Group();
+  for (let i = 0; i < 9; i++) {
+    const a = (i / 9) * Math.PI * 2 + Math.random() * 0.3;
+    const rad = 60 + Math.random() * 28;
+    const s = 14 + Math.random() * 12;
+    const m = new THREE.Mesh(
+      new THREE.IcosahedronGeometry(s, 0),
+      new THREE.MeshStandardMaterial({ color: new THREE.Color().setHSL(0.3 + Math.random() * 0.07, 0.22, 0.42 + Math.random() * 0.08), flatShading: true, roughness: 1 }));
+    m.position.set(Math.cos(a) * rad, -1.5, Math.sin(a) * rad);
+    m.scale.y = 0.55;
+    hills.add(m);
+  }
+  scene.add(hills);
+
   const underwater = createUnderwater(POND_R);
   scene.add(underwater.group);
   const water = createWater(POND_R);
@@ -108,7 +124,7 @@ export function createPondScene() {
   // Snails for cozy ambient life along the rim.
   const critters = createCritters(POND_R, ripples);
   scene.add(critters.group);
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < 3; i++) {
     const a = Math.random() * Math.PI * 2, r = POND_R + 0.5 + Math.random() * 0.9;
     critters.addSnail(Math.cos(a) * r, Math.sin(a) * r);
   }
@@ -137,7 +153,7 @@ export function createPondScene() {
   }
   function stepCamera(dt) {
     idle += dt;
-    if (idle > 5) camTgt.az += dt * 0.05; // slow, zen drift when left alone
+    if (idle > 5) camTgt.az += dt * 0.03; // very slow, zen drift when left alone
     const k = 1 - Math.pow(0.0016, Math.min(dt, 0.05)); // frame-rate independent damping
     camCur.radius += (camTgt.radius - camCur.radius) * k;
     camCur.az += (camTgt.az - camCur.az) * k;

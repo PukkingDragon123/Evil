@@ -10,6 +10,7 @@
 // =============================================================================
 
 import * as THREE from 'three';
+import { CONFIG } from '../config.js';
 
 const BEND_TIME = { value: 0 };
 export function setKoiTime(t) { BEND_TIME.value = t; }
@@ -26,9 +27,9 @@ function sampleProfile(arr, t) {
 let _bodyGeo = null;
 function bodyGeometry() {
   if (_bodyGeo) return _bodyGeo;
-  const N = 18, M = 11; // low-poly: faceted, stylised
-  // Slim koi: narrow body, gently tapering, fullest just behind the head.
-  const WIDTH = [0.012, 0.12, 0.21, 0.27, 0.28, 0.25, 0.20, 0.15, 0.10, 0.055, 0.03];
+  const N = 20, M = 12; // low-poly: faceted, stylised, but a graceful silhouette
+  // Slim koi: rounded head, fullest just behind it, tapering to a fine peduncle.
+  const WIDTH = [0.02, 0.15, 0.24, 0.285, 0.28, 0.245, 0.195, 0.145, 0.095, 0.05, 0.02];
   const pos = [], uv = [], idx = [];
   for (let i = 0; i <= N; i++) {
     const t = i / N;
@@ -149,8 +150,9 @@ function makeKoiTexture(p) {
   x.fillStyle = bg; x.fillRect(0, 0, w, h);
 
   const blob = (bx, by, r, c, a = 0.95) => {
-    const g = x.createRadialGradient(bx, by, r * 0.15, bx, by, r);
-    g.addColorStop(0, css(c, a)); g.addColorStop(0.65, css(c, a)); g.addColorStop(1, css(c, 0));
+    // crisp koi markings: solid centre, quick soft edge
+    const g = x.createRadialGradient(bx, by, r * 0.2, bx, by, r);
+    g.addColorStop(0, css(c, a)); g.addColorStop(0.84, css(c, a)); g.addColorStop(1, css(c, 0));
     x.fillStyle = g; x.beginPath(); x.arc(bx, by, r, 0, Math.PI * 2); x.fill();
   };
   const patch = p.patch;
@@ -212,6 +214,15 @@ export function createKoiFish(desc) {
   });
   applyBend(bodyMat, bend, 0); materials.push(bodyMat);
   group.add(new THREE.Mesh(bodyGeometry(), bodyMat));
+
+  // Clean stylised ink outline (inverted hull that bends with the body).
+  if (CONFIG.koiOutline) {
+    const outlineMat = new THREE.MeshBasicMaterial({ color: 0x2a1c10, side: THREE.BackSide });
+    applyBend(outlineMat, bend, 0); materials.push(outlineMat);
+    const outline = new THREE.Mesh(bodyGeometry(), outlineMat);
+    outline.scale.setScalar(1.06);
+    group.add(outline);
+  }
 
   // fins (soft, translucent)
   const finCol = color(p.patch).lerp(color(p.base), 0.45).lerp(new THREE.Color(0xffffff), 0.4);

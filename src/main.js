@@ -185,13 +185,10 @@ function frame(t) {
   if (now - state.lastSeen > 4000) state.applyOffline(now);
   else state.tick(now);
 
-  // market & visitors
-  if (state.refreshMarket(now)) {
-    ui.toast('🏮 Fresh koi have arrived at the market.', 'info');
-    ui.refresh(now);
-  }
+  // market & visitors (quietly — no nagging)
+  if (state.refreshMarket(now)) ui.refresh(now);
   const ot = state.tickOffers(now);
-  if (ot.added) { ui.toast(`🙇 A visitor — ${ot.added.label} (🪙 ${ot.added.price})`, 'info'); ui.refresh(now); }
+  if (ot.added) { ui.toast(`🙇 A visitor — ${ot.added.label}`, 'info'); ui.refresh(now); }
   else if (ot.expired) ui.refresh(now);
 
   scene.update(dt);

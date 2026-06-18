@@ -64,6 +64,7 @@ console.log('visual smoke test');
       ok(body.geometry.getAttribute('uv'), 'body geometry has UVs for the koi texture');
       ok(body.geometry.getIndex(), 'body geometry is indexed');
       ok(body.material.flatShading === true, 'body uses low-poly flat shading');
+      ok(fish.children.some((c) => c.isMesh && c.material && c.material.side === THREE.BackSide && !c.material.map), 'koi has an ink outline');
 
       const u = fish.userData;
       ok(u.bend && u.bend.uAmp && u.bend.uPhase, 'fish has swim-bend uniforms');
