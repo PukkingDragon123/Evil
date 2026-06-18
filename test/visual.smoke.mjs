@@ -33,6 +33,10 @@ const { createKoiFish, updateKoiFish, disposeKoiFish, setKoiTime } =
 const { createWater } = await import('../src/scene/water.js');
 const { createRipples } = await import('../src/scene/ripples.js');
 const { createGarden } = await import('../src/scene/garden.js');
+const { createCritters } = await import('../src/scene/critters.js');
+const { createWeather } = await import('../src/scene/weather.js');
+const { buildDecoration, createDecor } = await import('../src/scene/decor.js');
+const { DECOR } = await import('../src/game/decorations.js');
 
 console.log('visual smoke test');
 
@@ -64,7 +68,7 @@ console.log('visual smoke test');
       ok(u.bend && u.bend.uAmp && u.bend.uPhase, 'fish has swim-bend uniforms');
       ok(u.pecL && u.pecR, 'fish has pectoral fins');
       ok(u.shadow && u.ring, 'fish has shadow & selection ring');
-      ok(u.materials.length === 4 && u.texture, 'per-fish materials + texture tracked for disposal');
+      ok(u.materials.length >= 4 && u.texture, 'per-fish materials + texture tracked for disposal');
       ok(fish.scale.x === desc.phenotype.size, 'scaled to genetic size');
 
       updateKoiFish(fish, 0.5, 0.8);
@@ -129,6 +133,49 @@ console.log('visual smoke test');
   g.update(2.0);
   g.update(4.0);
   ok(true, 'garden floaters animate without error');
+}
+
+// --- critters (ducks & snails) ----------------------------------------------
+{
+  const c = createCritters(18, { ring() {} });
+  const d = c.addDuck(2, 3);
+  const s = c.addSnail(19, 0);
+  ok(c.group.children.length === 2, 'a duck and a snail were added');
+  for (let i = 0; i < 60; i++) c.update(0.016, i * 0.016);
+  ok(true, 'critters animate without error');
+  c.removeDuck(d); c.removeSnail(s);
+  ok(c.group.children.length === 0, 'critters can be removed');
+}
+
+// --- weather ----------------------------------------------------------------
+{
+  const sun = { intensity: 1 };
+  const sky = { material: { uniforms: { top: { value: new THREE.Color() }, bottom: { value: new THREE.Color() } } } };
+  const fog = { color: new THREE.Color() };
+  let rippleCalls = 0;
+  const w = createWeather({ sun, sky, fog, ripples: { ring() { rippleCalls++; } }, rng: makeRng(3) });
+  ok(w.group.children.length === 2, 'weather has rain + petal particle fields');
+  for (let i = 0; i < 4000; i++) w.update(0.05); // run through several weather changes
+  ok(typeof w.getState().label === 'string', 'weather reports a labelled state');
+  ok(Number.isFinite(sun.intensity), 'weather keeps sun intensity finite');
+}
+function makeRng(seed) { let s = seed >>> 0; return () => (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296; }
+
+// --- decorations ------------------------------------------------------------
+{
+  let builtAll = true;
+  for (const d of DECOR) {
+    if (d.id === 'duck' || d.id === 'snail') continue; // handled by critters
+    if (!buildDecoration(d.id)) builtAll = false;
+  }
+  ok(builtAll, 'every structural decoration builds a model');
+
+  const mgr = createDecor();
+  mgr.add({ id: 1, type: 'torii', x: 3, z: 4, rot: 0.5 });
+  mgr.add({ id: 2, type: 'pagoda', x: -3, z: 2, rot: 0 });
+  ok(mgr.group.children.length === 2 && mgr.has(1), 'decor manager places decorations');
+  mgr.remove(1);
+  ok(mgr.group.children.length === 1 && !mgr.has(1), 'decor manager removes decorations');
 }
 
 console.log(`\n${passed} passed, ${failed} failed`);

@@ -9,6 +9,7 @@
 // =============================================================================
 
 import * as THREE from 'three';
+import { buildDecoration } from './decor.js';
 
 // --- procedural raked-sand texture ------------------------------------------
 function rakedSandTexture() {
@@ -186,6 +187,20 @@ export function createGarden(pondRadius) {
     reeds.position.set(Math.cos(a) * (pondRadius + 2.5), -0.1, Math.sin(a) * (pondRadius + 2.5));
     group.add(reeds);
   }
+
+  // Ambient trees & bushes ringing the garden (lush by default).
+  const flora = ['maple', 'pine', 'maple', 'pine', 'bush', 'bush', 'maple'];
+  flora.forEach((type, i) => {
+    const a = (i / flora.length) * Math.PI * 2 + Math.random() * 0.5;
+    const rad = pondRadius + 4 + Math.random() * 4;
+    const tree = buildDecoration(type);
+    if (tree) {
+      tree.position.set(Math.cos(a) * rad, -0.08, Math.sin(a) * rad);
+      tree.rotation.y = Math.random() * Math.PI * 2;
+      tree.scale.setScalar(1.1 + Math.random() * 0.7);
+      group.add(tree);
+    }
+  });
 
   // Lily pads (some with lotus flowers) floating on the surface.
   const padCount = 11;

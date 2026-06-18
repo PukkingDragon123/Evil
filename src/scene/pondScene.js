@@ -14,6 +14,9 @@ import { createWater } from './water.js';
 import { createGarden } from './garden.js';
 import { createRipples } from './ripples.js';
 import { createKoiFish, updateKoiFish, disposeKoiFish, setKoiTime } from './koiFish.js';
+import { createCritters } from './critters.js';
+import { createWeather } from './weather.js';
+import { createDecor } from './decor.js';
 
 const POND_R = CONFIG.pondRadius;
 
@@ -95,6 +98,25 @@ export function createPondScene() {
   const ripples = createRipples();
   scene.add(ripples.group);
 
+  // Weather drives the sun, sky and fog, and dimples the pond when it rains.
+  const weather = createWeather({ sun, sky, fog: scene.fog, ripples });
+  scene.add(weather.group);
+
+  // Ducks & snails for cozy ambient life.
+  const critters = createCritters(POND_R, ripples);
+  scene.add(critters.group);
+  critters.addDuck();
+  critters.addDuck();
+  for (let i = 0; i < 6; i++) {
+    const a = Math.random() * Math.PI * 2, r = POND_R + 0.5 + Math.random() * 0.9;
+    critters.addSnail(Math.cos(a) * r, Math.sin(a) * r);
+  }
+
+  // Placed decorations (building system).
+  const decor = createDecor();
+  scene.add(decor.group);
+  const placedReg = new Map(); // recId -> { kind, handle?, x, z }
+
   // Decals (shadows + selection rings) live in their own group on/near the floor.
   const decals = new THREE.Group();
   scene.add(decals);
@@ -172,18 +194,19 @@ export function createPondScene() {
 
   // --- movement & animation ---
   function stepFish(v, dt, t) {
+    const SP = CONFIG.fishSpeed;
     v.wanderTimer -= dt;
     if (v.wanderTimer <= 0) {
       v.targetAngle = v.heading + (Math.random() - 0.5) * 2.2;
-      v.targetSpeed = (0.7 + Math.random() * 0.8) * (1.4 / (0.7 + v.size));
-      v.wanderTimer = 1.4 + Math.random() * 2.6;
+      v.targetSpeed = (0.7 + Math.random() * 0.8) * (1.4 / (0.7 + v.size)) * SP;
+      v.wanderTimer = 1.8 + Math.random() * 3.0;
     }
 
     // Steer back toward the centre as we near the rim.
     const r = Math.hypot(v.x, v.z);
     if (r > POND_R - 2.4) {
       v.targetAngle = Math.atan2(-v.z, -v.x) + (Math.random() - 0.5) * 0.6;
-      v.targetSpeed = Math.max(v.targetSpeed, 1.0);
+      v.targetSpeed = Math.max(v.targetSpeed, SP);
     }
 
     // Turn toward target heading along the shortest arc.
@@ -226,8 +249,8 @@ export function createPondScene() {
       const d = Math.hypot(dx, dz);
       if (d < radius) {
         v.targetAngle = Math.atan2(dz, dx);
-        v.targetSpeed = 2.4;
-        v.speed = Math.max(v.speed, 2.0);
+        v.targetSpeed = 2.4 * CONFIG.fishSpeed;
+        v.speed = Math.max(v.speed, 2.0 * CONFIG.fishSpeed);
         v.wanderTimer = 0.8;
       }
     }
@@ -237,13 +260,39 @@ export function createPondScene() {
   function update(dt) {
     elapsed += dt;
     setKoiTime(elapsed);
+    weather.update(dt);
     water.update(elapsed);
     garden.update(elapsed);
+    critters.update(dt, elapsed);
     ripples.update(dt);
     for (const v of views.values()) stepFish(v, dt, elapsed);
     stepCamera(dt);
     renderer.render(scene, camera);
   }
+
+  // --- decorations / building ---------------------------------------------
+  function addDecoration(rec) {
+    if (rec.type === 'duck') { const h = critters.addDuck(rec.x, rec.z); placedReg.set(rec.id, { kind: 'duck', handle: h, x: rec.x, z: rec.z }); }
+    else if (rec.type === 'snail') { const h = critters.addSnail(rec.x, rec.z); placedReg.set(rec.id, { kind: 'snail', handle: h, x: rec.x, z: rec.z }); }
+    else { decor.add(rec); placedReg.set(rec.id, { kind: 'decor', x: rec.x, z: rec.z }); }
+  }
+  function removeDecoration(id) {
+    const e = placedReg.get(id);
+    if (!e) return;
+    if (e.kind === 'duck') critters.removeDuck(e.handle);
+    else if (e.kind === 'snail') critters.removeSnail(e.handle);
+    else decor.remove(id);
+    placedReg.delete(id);
+  }
+  function pickDecoration(point, maxDist = 2.4) {
+    let best = null, bd = maxDist;
+    for (const [id, e] of placedReg) {
+      const d = Math.hypot(e.x - point.x, e.z - point.z);
+      if (d < bd) { bd = d; best = id; }
+    }
+    return best;
+  }
+  function getWeather() { return weather.getState(); }
 
   // --- pointer helpers ---
   const raycaster = new THREE.Raycaster();
@@ -297,6 +346,7 @@ export function createPondScene() {
     mount, resize, update,
     addFish, removeFish, hasFish, fishIds, syncSelection,
     surfacePoint, nearestFish, startle,
+    addDecoration, removeDecoration, pickDecoration, getWeather,
     orbit, zoom,
   };
 }

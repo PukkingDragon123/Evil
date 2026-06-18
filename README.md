@@ -34,24 +34,29 @@ correct MIME types so the import map and modules load as-is.
 
 ## 🎮 How to play
 
-- **🪙 Coins** trickle in every second from the koi in your pond. Rarer, finer
-  koi earn more.
-- **🛒 Shop** — buy *Common* or *Wild* koi, **enlarge the pond**, drop in
-  **Fish Food** (double income for a while), or **Fertilizer** (instantly ready
-  every koi to breed).
-- **🐟 Tap a koi** to inspect its genes, value and income. Tap a second koi to
-  **pair** them.
-- **🧬 Breed** the pair: offspring inherit a blend of both parents' genes, with
-  the occasional surprise **mutation**. Some pairings unlock brand-new traits.
-- **📖 Koi-dex** — particular trait combinations are recognised as real koi
-  varieties (Kohaku, Tancho, Showa, Ogon, Asagi, Kumonryu and more). Discover
-  them all.
-- **♻️ Pond full?** Release a koi back to the wild for coins to make room for
-  your finest fish.
-- **🌊 Camera** — drag to look around, scroll to zoom, tap the water for ripples.
+Koi are precious — you get them two ways: the **Market** and **breeding**.
 
-Progress saves automatically to your browser, and your koi keep earning (a
-little) while you're away.
+- **🏮 Market (市場)** — three koi arrive each minute, each with its own traits,
+  rarity and price. Buy the bloodlines you want before they refresh.
+- **🙇 Visitors (客)** — buyers drop by seeking a particular variety or trait
+  (a Kohaku, a 4★ koi, Veil fins, sumi, a metallic koi…) and pay a **premium**.
+  Fulfilling their requests is your steadiest income.
+- **🐟 Tap a koi** to inspect its genes, value and income; tap a second to
+  **pair** them.
+- **🧬 Breeding Cave (繁殖の洞)** — pick a pair and study the **simulated odds**
+  of each variety, the quality spread and the chance of a brand-new trait, then
+  breed. Offspring blend both parents' genes with occasional **mutations**.
+- **🍃 Shop (店)** — enlarge the pond and feed special foods: more income, faster
+  breeding, finer broods, or more frequent visitors.
+- **⛩️ Build (普請)** — buy lanterns, torii gates, bridges, pagodas, trees, ducks,
+  snails and more, then **tap the garden** to place them (tap again in *remove
+  mode* to sell a piece back).
+- **📖 Koi-dex (図鑑)** — discover all the real koi varieties (Kohaku, Tancho,
+  Showa, Ogon, Asagi, Kumonryu, Butterfly…).
+- **🌦️ Weather** drifts from sun to sakura petals to rain. 🦆 Ducks paddle and
+  🐌 snails roam. Drag to look around, scroll to zoom, tap the water for ripples.
+
+Progress saves automatically, and your koi keep earning (a little) while away.
 
 ---
 
@@ -79,18 +84,24 @@ styles.css            # zen UI styling
 vendor/three.module.js# vendored Three.js r160 (self-contained)
 src/
   config.js           # all gameplay/balance tunables
-  main.js             # bootstrap, input, game loop, actions, autosave
+  main.js             # bootstrap, input, build mode, market/offer ticks, loop
   game/
-    genetics.js       # genome, inheritance, mutation, subspecies, scoring
-    state.js          # pond, economy, actions, save/load
+    genetics.js       # genome, inheritance, mutation, subspecies, market synthesis, breeding sim
+    state.js          # pond, economy, market, offers, foods, decorations, save/load
+    market.js         # market listings & buyer-offer generation/matching
+    foods.js          # food catalog (temporary buffs)
+    decorations.js    # decoration catalog (building system)
   scene/
-    pondScene.js      # renderer, camera, lights, fish movement & picking
-    koiFish.js        # smooth procedural koi (painted koi-pattern textures) + swim
+    pondScene.js      # renderer, camera, lights, fish movement, build placement
+    koiFish.js        # slim procedural koi (eyes, fins, barbels) + swim shader
     water.js          # stylised translucent water shader
     ripples.js        # tap ripples & droplet particles
-    garden.js         # raked sand, rocks, lily pads, lotus, reeds
+    garden.js         # raked sand, rocks, lily pads, lotus, reeds, trees
+    critters.js       # ducks (with wakes) & snails
+    weather.js        # sun / petals / cloud / rain cycle
+    decor.js          # decoration models + placement manager
   ui/
-    ui.js             # HUD, shop, breeding, Koi-dex, inspect card
+    ui.js             # HUD, Market, Visitors, Breeding Cave, Shop, Build, Koi-dex
     toast.js          # transient notifications
 test/                 # Node tests (no browser needed)
 ```
@@ -104,8 +115,9 @@ dependency-free Node tests:
 
 ```bash
 node test/genetics.test.js     # genome / inheritance / subspecies / scoring
-node test/state.test.js        # economy / breeding / save-load
-node test/visual.smoke.mjs     # builds fish/water/ripples/garden vs real Three.js
+node test/systems.test.js      # market synthesis / breeding odds / offers / catalogs
+node test/state.test.js        # economy / market / offers / foods / decor / save-load
+node test/visual.smoke.mjs     # builds koi/water/critters/weather/decor vs real Three.js
 ```
 
 > The visual smoke test resolves `three` via a tiny `node_modules/three` shim

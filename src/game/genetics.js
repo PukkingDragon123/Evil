@@ -327,3 +327,145 @@ export function describe(genome, cfg = CONFIG) {
     income: incomeOf(phenotype, subspecies, cfg),
   };
 }
+
+// =============================================================================
+// Subspecies lookup + genome synthesis (for the Koi Market)
+// =============================================================================
+export const SUBSPECIES_BY_ID = Object.fromEntries(SUBSPECIES.map((s) => [s.id, s]));
+export function subspeciesById(id) { return SUBSPECIES_BY_ID[id] || SUBSPECIES[SUBSPECIES.length - 1]; }
+
+const rr = (rng, a, b) => lerp(a, b, rng());
+const redHue = (rng) => (rng() < 0.5 ? rr(rng, 0.0, 0.05) : rr(rng, 0.95, 0.995));
+
+// Build a genome that (very probably) expresses as a given subspecies. Used to
+// stock the market with recognisable, named koi at appropriate rarities.
+export function genomeForSubspecies(id, rng = Math.random) {
+  switch (id) {
+    case 'kohaku': return makeGenome({
+      baseSat: rr(rng, 0.02, 0.16), baseLight: rr(rng, 0.87, 0.96),
+      patchHue: redHue(rng), patchSat: rr(rng, 0.6, 0.92), patchLight: rr(rng, 0.42, 0.6),
+      pattern: rr(rng, 0.34, 0.66), sumi: rr(rng, 0, 0.35), fin: rr(rng, 0, 0.55),
+      luster: rr(rng, 0, 0.3), size: rr(rng, 0.35, 0.85), vigor: rr(rng, 0.4, 0.8),
+    });
+    case 'tancho': return makeGenome({
+      baseSat: rr(rng, 0.02, 0.15), baseLight: rr(rng, 0.88, 0.96),
+      patchHue: redHue(rng), patchSat: rr(rng, 0.7, 0.95), patchLight: rr(rng, 0.45, 0.58),
+      pattern: rr(rng, 0.18, 0.31), sumi: rr(rng, 0, 0.3), fin: rr(rng, 0, 0.5),
+      luster: rr(rng, 0, 0.3), size: rr(rng, 0.4, 0.85), vigor: rr(rng, 0.5, 0.85),
+    });
+    case 'sanke': return makeGenome({
+      baseSat: rr(rng, 0.03, 0.16), baseLight: rr(rng, 0.86, 0.95),
+      patchHue: redHue(rng), patchSat: rr(rng, 0.6, 0.9), patchLight: rr(rng, 0.42, 0.6),
+      pattern: rr(rng, 0.5, 0.69), sumi: rr(rng, 0.58, 0.82), fin: rr(rng, 0, 0.6),
+      luster: rr(rng, 0, 0.3), size: rr(rng, 0.4, 0.9),
+    });
+    case 'showa': return makeGenome({
+      baseHue: rr(rng, 0.0, 0.1), baseSat: rr(rng, 0.2, 0.6), baseLight: rr(rng, 0.15, 0.4),
+      patchHue: redHue(rng), patchSat: rr(rng, 0.6, 0.9), patchLight: rr(rng, 0.42, 0.6),
+      pattern: rr(rng, 0.5, 0.69), sumi: rr(rng, 0.62, 0.85), luster: rr(rng, 0, 0.25),
+      size: rr(rng, 0.45, 0.95),
+    });
+    case 'ogon': return makeGenome({
+      baseHue: rr(rng, 0.09, 0.16), baseSat: rr(rng, 0.45, 0.9), baseLight: rr(rng, 0.45, 0.68),
+      pattern: rr(rng, 0, 0.14), luster: rr(rng, 0.76, 0.96), size: rr(rng, 0.4, 0.9),
+    });
+    case 'platinum': return makeGenome({
+      baseSat: rr(rng, 0.02, 0.16), baseLight: rr(rng, 0.86, 0.95),
+      pattern: rr(rng, 0, 0.14), luster: rr(rng, 0.8, 0.97), size: rr(rng, 0.45, 0.95),
+    });
+    case 'asagi': return makeGenome({
+      baseHue: rr(rng, 0.55, 0.66), baseSat: rr(rng, 0.4, 0.8), baseLight: rr(rng, 0.3, 0.58),
+      patchHue: redHue(rng), patchSat: rr(rng, 0.4, 0.7), patchLight: rr(rng, 0.4, 0.6),
+      pattern: rr(rng, 0.72, 0.85), sumi: rr(rng, 0, 0.45), size: rr(rng, 0.4, 0.9),
+    });
+    case 'karasu': return makeGenome({
+      baseHue: rr(rng, 0.6, 0.72), baseSat: rr(rng, 0.0, 0.3), baseLight: rr(rng, 0.02, 0.1),
+      pattern: rr(rng, 0, 0.14), luster: rr(rng, 0, 0.45), size: rr(rng, 0.4, 0.9),
+    });
+    case 'kumonryu': return makeGenome({
+      baseSat: rr(rng, 0.0, 0.18), baseLight: rr(rng, 0.6, 0.85),
+      pattern: rr(rng, 0.87, 0.98), sumi: rr(rng, 0.62, 0.85), luster: rr(rng, 0, 0.3),
+      size: rr(rng, 0.45, 0.95),
+    });
+    case 'goshiki': return makeGenome({
+      baseHue: rr(rng, 0.0, 0.12), baseSat: rr(rng, 0.3, 0.7), baseLight: rr(rng, 0.3, 0.6),
+      patchHue: redHue(rng), patchSat: rr(rng, 0.5, 0.85),
+      pattern: rr(rng, 0.72, 0.85), sumi: rr(rng, 0.6, 0.82), size: rr(rng, 0.4, 0.9),
+    });
+    case 'bekko': return makeGenome({
+      baseHue: rr(rng, 0.07, 0.16), baseSat: rr(rng, 0.1, 0.5), baseLight: rr(rng, 0.4, 0.8),
+      patchSat: rr(rng, 0.0, 0.35), pattern: rr(rng, 0.5, 0.69), sumi: rr(rng, 0.6, 0.82),
+      size: rr(rng, 0.4, 0.9),
+    });
+    case 'yamabuki': return makeGenome({
+      baseHue: rr(rng, 0.11, 0.19), baseSat: rr(rng, 0.5, 0.9), baseLight: rr(rng, 0.5, 0.75),
+      pattern: rr(rng, 0, 0.3), luster: rr(rng, 0.52, 0.68), size: rr(rng, 0.4, 0.9),
+    });
+    case 'butterfly': return makeGenome({
+      baseHue: rng(), baseSat: rr(rng, 0.3, 0.9), baseLight: rr(rng, 0.4, 0.9),
+      patchHue: redHue(rng), patchSat: rr(rng, 0.5, 0.9), pattern: rr(rng, 0.1, 0.7),
+      fin: rr(rng, 0.91, 0.99), luster: rr(rng, 0.2, 0.7), size: rr(rng, 0.5, 1.0),
+    });
+    default: return randomCommonGenome(rng); // 'pond'
+  }
+}
+
+// Pick a market koi, weighted so rare varieties show up rarely. Returns the id.
+export function rollMarketSubspecies(rng = Math.random) {
+  const weights = SUBSPECIES.map((s) => ({ id: s.id, w: 1 / Math.pow(s.rarity, 1.6) }));
+  const total = weights.reduce((a, x) => a + x.w, 0);
+  let t = rng() * total;
+  for (const x of weights) { if ((t -= x.w) <= 0) return x.id; }
+  return 'pond';
+}
+
+export function randomMarketGenome(rng = Math.random) {
+  return genomeForSubspecies(rollMarketSubspecies(rng), rng);
+}
+
+// =============================================================================
+// Breeding preview — simulate the chosen pair and report the odds.
+// =============================================================================
+export function previewBreeding(momGenome, dadGenome, { trials = 240, rng = Math.random, cfg = CONFIG } = {}) {
+  const counts = {};
+  const starHist = [0, 0, 0, 0, 0, 0]; // index 0 unused; 1..5
+  let sumStars = 0, best = 0, novel = 0;
+  const aId = classify(phenotypeOf(momGenome, cfg)).id;
+  const bId = classify(phenotypeOf(dadGenome, cfg)).id;
+
+  for (let i = 0; i < trials; i++) {
+    const child = breed(momGenome, dadGenome, rng, cfg);
+    const ph = phenotypeOf(child, cfg);
+    const sp = classify(ph);
+    const st = starsOf(ph, sp);
+    counts[sp.id] = (counts[sp.id] || 0) + 1;
+    starHist[st]++;
+    sumStars += st;
+    if (st > best) best = st;
+    if (sp.id !== aId && sp.id !== bId) novel++;
+  }
+
+  const dist = Object.entries(counts).map(([id, n]) => {
+    const sp = subspeciesById(id);
+    return { id, name: sp.name, jp: sp.jp, rarity: sp.rarity, pct: n / trials };
+  }).sort((x, y) => y.pct - x.pct);
+
+  return { trials, dist, starHist, avgStars: sumStars / trials, bestStars: best, mutationChance: novel / trials };
+}
+
+// =============================================================================
+// Buyer offers — does a koi satisfy a requested trait?
+// =============================================================================
+export function offerMatches(spec, desc) {
+  const p = desc.phenotype;
+  switch (spec.type) {
+    case 'subspecies': return desc.subspecies.id === spec.id;
+    case 'stars': return desc.stars >= spec.min;
+    case 'fin': return p.fin === spec.fin;
+    case 'pattern': return p.pattern === spec.pattern;
+    case 'sumi': return p.hasSumi;
+    case 'metallic': return p.luster >= 0.7;
+    case 'size': return p.sizeNorm >= spec.min;
+    default: return false;
+  }
+}

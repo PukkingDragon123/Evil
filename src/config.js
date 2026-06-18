@@ -1,61 +1,74 @@
 // =============================================================================
-// Plenty Fish in the Sea — global tunables
-// All gameplay balance lives here so it is easy to find and adjust.
+// Plenty Fish in the Sea — global tunables.
+// Cozy, slow, "koi are precious": passive income is gentle, koi come from the
+// timed Market or from breeding, and buyers pay premiums for koi you raise.
 // =============================================================================
 
 export const CONFIG = {
   // --- Economy -------------------------------------------------------------
-  startingCoins: 50,
+  startingCoins: 160,
   startingCapacity: 6,
-  // Coins generated per second is sum over fish of (incomeBase * qualityFactor).
-  incomeBase: 0.06,
-  // Cost to buy a fresh pond-grade (common) fish. Scales with how many you own.
-  basicFishBaseCost: 25,
-  basicFishCostGrowth: 1.18,
-  // Capacity upgrades.
-  capacityStep: 4,
-  capacityBaseCost: 80,
-  capacityCostGrowth: 1.55,
-  maxCapacity: 120,
-  // A small fee per breeding (spawning food), plus a cooldown.
-  breedCost: 12,
-  breedCooldownMs: 14000,
-  // Fertilizer item removes all breeding cooldowns instantly.
-  fertilizerCost: 40,
-  // Feeding the pond temporarily boosts income.
-  feedCost: 30,
-  feedBoostMult: 2.0,
-  feedBoostMs: 30000,
-  // Offline income is granted on load, capped so it stays a treat, not a job.
+  incomeBase: 0.035,            // gentle passive trickle; offers are the real money
+
+  // Pond capacity upgrades.
+  capacityStep: 3,
+  capacityBaseCost: 140,
+  capacityCostGrowth: 1.6,
+  maxCapacity: 90,
+
+  // Breeding (cozy, deliberate).
+  breedCost: 18,
+  breedCooldownMs: 22000,
+  breedPreviewTrials: 260,      // Monte-Carlo samples for the breeding-cave odds
+
+  // Offline income is granted on load, capped so it stays a treat.
   offlineCapMs: 2 * 60 * 60 * 1000,
   offlineRate: 0.5,
 
+  // --- Koi Market (3 random koi, refreshing on a timer) --------------------
+  market: {
+    size: 3,
+    refreshMs: 60000,
+    priceMult: 2.6,             // koi are dear — buying is a commitment
+  },
+
+  // --- Buyers / offers -----------------------------------------------------
+  offers: {
+    max: 3,
+    intervalMs: 70000,          // a new visitor roughly this often
+    expireMs: 165000,
+    premiumMin: 1.8,
+    premiumMax: 3.2,
+  },
+
+  // --- Weather -------------------------------------------------------------
+  weather: {
+    minMs: 42000,
+    maxMs: 95000,
+  },
+
   // --- Genetics ------------------------------------------------------------
-  // Per-gene chance to mutate during breeding, and the noise applied when it does.
   mutationRate: 0.28,
   mutationSigma: 0.09,
-  // Rare large "sport" mutation for novelty.
   bigMutationRate: 0.04,
   bigMutationSigma: 0.32,
-  // Offspring per successful breed (inclusive range).
   minOffspring: 1,
   maxOffspring: 3,
-  // Size gene maps to this visual/scale range.
-  sizeMin: 0.62,
+  sizeMin: 0.6,
   sizeMax: 1.85,
 
   // --- Pond / world --------------------------------------------------------
   pondRadius: 18,
-  swimDepth: -0.35, // how far below the water surface fish float
-  maxRenderedFish: 120,
+  swimDepth: -0.35,
+  maxRenderedFish: 90,
+  fishSpeed: 0.7,               // global swim-speed scale (cozy = slow)
 
   // --- Persistence ---------------------------------------------------------
-  saveKey: 'pfits.save.v1',
+  saveKey: 'pfits.save.v2',
   autosaveMs: 4000,
 };
 
-// Quality weighting — how each phenotype trait contributes to a fish's
-// quality score (0..1-ish before subspecies bonus). Tunable feel.
+// Quality weighting — how each phenotype trait contributes to quality.
 export const QUALITY_WEIGHTS = {
   size: 0.26,
   luster: 0.24,

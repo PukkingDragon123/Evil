@@ -247,6 +247,57 @@ html, body {
 .loading__inner p { color: #e7cfa3; margin: 0; letter-spacing: 2px; }
 .fatal { color: #ffd9c9; text-align: center; font-size: 18px; line-height: 1.6; }
 
+/* --- expansion UI: market, offers, breeding odds, build ------------------- */
+.toolbar { flex-wrap: wrap; max-width: 96vw; }
+.pill--buff { color: #d8c089; }
+.countdown { color: var(--ink-soft); font-size: 13px; line-height: 1.5; margin: 0 0 16px; }
+.countdown b { color: var(--vermilion-deep); }
+.panel__body h3 { font-size: 14px; margin: 18px 0 8px; color: var(--ink-soft); border-bottom: 1px dashed var(--washi-line); padding-bottom: 4px; }
+
+.listings, .offers { display: flex; flex-direction: column; gap: 12px; }
+.listing, .offer {
+  background: rgba(255, 252, 240, 0.66); border: 1.5px solid var(--washi-line);
+  border-radius: 12px; padding: 12px;
+}
+.listing__top { display: flex; justify-content: space-between; align-items: flex-start; }
+.listing__name { font-size: 16px; font-weight: 700; }
+.listing__jp { color: var(--vermilion-deep); font-size: 12px; }
+.listing__stars { color: var(--gold); letter-spacing: 1px; font-size: 13px; }
+.listing__sw { display: flex; align-items: center; gap: 6px; margin: 9px 0; flex-wrap: wrap; }
+.listing__buy { display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; color: var(--ink-soft); }
+
+.offer { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; }
+.offer__txt b { font-size: 14px; display: block; }
+.offer__txt span { font-size: 12px; }
+.offer__txt .ok { color: #4f7a3a; } .offer__txt .no { color: var(--ink-soft); }
+
+.odds { display: flex; flex-direction: column; gap: 6px; }
+.obar { display: grid; grid-template-columns: 86px 1fr 38px; align-items: center; gap: 8px; }
+.obar label { font-size: 11.5px; }
+.obar b { font-size: 11.5px; text-align: right; color: var(--ink-soft); }
+.stars-spread { display: flex; align-items: flex-end; justify-content: space-around; gap: 8px; height: 80px; padding: 6px 0; }
+.starbar { display: flex; flex-direction: column; align-items: center; gap: 4px; justify-content: flex-end; }
+.starbar span { width: 26px; background: linear-gradient(180deg, var(--gold), var(--tea)); border-radius: 5px 5px 0 0; display: block; }
+.starbar label { font-size: 10px; color: var(--ink-soft); }
+.preview-stats { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--ink); margin: 10px 0 16px; }
+
+.toolbtn {
+  width: 100%; margin-bottom: 14px; border: 1.5px solid var(--wood-edge); border-radius: 9px;
+  padding: 10px; cursor: pointer; font-family: var(--serif); font-weight: 700; color: var(--ink);
+  background: linear-gradient(180deg, var(--washi), var(--washi2));
+}
+.toolbtn.active { background: linear-gradient(180deg, #d8412e, #a82a1c); color: #fff5ec; border-color: var(--vermilion-deep); }
+
+.buildgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.build__card {
+  background: rgba(255, 252, 240, 0.7); border: 1.5px solid var(--washi-line); border-radius: 12px;
+  padding: 12px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center;
+}
+.build__card.active { border-color: var(--vermilion); box-shadow: 0 0 0 2px rgba(195,58,38,.25); }
+.build__icon { font-size: 30px; }
+.build__name { font-size: 13px; font-weight: 700; line-height: 1.2; }
+.build__name small { display: block; color: var(--vermilion-deep); font-weight: 400; }
+
 /* --- small screens -------------------------------------------------------- */
 @media (max-width: 560px) {
   .brand { top: 10px; left: 10px; }
