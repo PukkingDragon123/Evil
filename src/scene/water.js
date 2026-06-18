@@ -82,7 +82,7 @@ const fragmentShader = /* glsl */ `
     float foam = smoothstep(0.9, 0.99, shore) * (0.5 + 0.5 * sin(vRadius * 6.0 + uTime * 2.0));
 
     vec3 colr = base + uHi * (spec + spec2) + uHi * fres * 0.22 + c + uFoam * foam * 0.6;
-    float alpha = mix(0.55, 0.82, shore); // clearer water so the koi read well
+    float alpha = mix(0.30, 0.62, shore); // very clear water — the pond bed shows through
     gl_FragColor = vec4(colr, alpha);
   }
 `;

@@ -12,7 +12,7 @@ function ctx2d() {
   const grad = () => ({ addColorStop: noop });
   return {
     fillStyle: '', strokeStyle: '', lineWidth: 0,
-    fillRect: noop, beginPath: noop, arc: noop, stroke: noop, fill: noop, moveTo: noop, lineTo: noop,
+    fillRect: noop, clearRect: noop, beginPath: noop, arc: noop, stroke: noop, fill: noop, moveTo: noop, lineTo: noop,
     createRadialGradient: grad, createLinearGradient: grad,
   };
 }
@@ -35,6 +35,7 @@ const { createRipples } = await import('../src/scene/ripples.js');
 const { createGarden } = await import('../src/scene/garden.js');
 const { createCritters } = await import('../src/scene/critters.js');
 const { createWeather } = await import('../src/scene/weather.js');
+const { createUnderwater } = await import('../src/scene/underwater.js');
 const { buildDecoration, createDecor } = await import('../src/scene/decor.js');
 const { DECOR } = await import('../src/game/decorations.js');
 
@@ -61,8 +62,8 @@ console.log('visual smoke test');
       const body = fish.children.find((c) => c.isMesh && c.material && c.material.map);
       ok(body, 'fish has a textured body mesh');
       ok(body.geometry.getAttribute('uv'), 'body geometry has UVs for the koi texture');
-      ok(body.geometry.getIndex(), 'body geometry is indexed (smooth, not faceted)');
-      ok(body.material.flatShading !== true, 'body uses smooth shading (not origami)');
+      ok(body.geometry.getIndex(), 'body geometry is indexed');
+      ok(body.material.flatShading === true, 'body uses low-poly flat shading');
 
       const u = fish.userData;
       ok(u.bend && u.bend.uAmp && u.bend.uPhase, 'fish has swim-bend uniforms');
@@ -176,6 +177,14 @@ function makeRng(seed) { let s = seed >>> 0; return () => (s = (s * 1664525 + 10
   ok(mgr.group.children.length === 2 && mgr.has(1), 'decor manager places decorations');
   mgr.remove(1);
   ok(mgr.group.children.length === 1 && !mgr.has(1), 'decor manager removes decorations');
+}
+
+// --- underwater scene -------------------------------------------------------
+{
+  const u = createUnderwater(18);
+  ok(u.group.children.length > 5, 'underwater populated (floor, pebbles, rocks, plants, caustics)');
+  u.update(1.0); u.update(2.5);
+  ok(typeof u.floorY === 'number', 'underwater exposes a floor height');
 }
 
 console.log(`\n${passed} passed, ${failed} failed`);

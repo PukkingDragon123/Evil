@@ -138,15 +138,7 @@ export function createGarden(pondRadius) {
   const group = new THREE.Group();
   const floaters = []; // {obj, baseY, phase, speed, spin}
 
-  // Deep basin under the water for a sense of depth.
-  const basin = new THREE.Mesh(
-    new THREE.CircleGeometry(pondRadius * 1.01, 64),
-    new THREE.MeshStandardMaterial({ color: 0x07343a, roughness: 1.0 }));
-  basin.rotation.x = -Math.PI / 2;
-  basin.position.y = -1.2;
-  basin.renderOrder = 0;
-  basin.receiveShadow = true;
-  group.add(basin);
+  // (The pond bed is provided by the underwater scene; see underwater.js.)
 
   // Raked-sand ground (a big disc the water sits on top of).
   const sand = new THREE.Mesh(

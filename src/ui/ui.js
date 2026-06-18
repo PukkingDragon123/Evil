@@ -10,7 +10,7 @@
 import { CONFIG } from '../config.js';
 import { SUBSPECIES } from '../game/genetics.js';
 import { FOODS } from '../game/foods.js';
-import { DECOR } from '../game/decorations.js';
+import { DECOR, DECOR_BY_ID } from '../game/decorations.js';
 import { createToaster } from './toast.js';
 
 const fmt = (n) => {
@@ -50,6 +50,11 @@ export function createUI(root, { state, actions, info }) {
       <button class="tool" data-panel="help">？<small>Help</small></button>
     </div>
 
+    <div class="placebar" id="placebar" hidden>
+      <span id="placebar-txt"></span>
+      <button id="placebar-cancel">✓ Done</button>
+    </div>
+
     <aside class="panel" id="panel" hidden>
       <button class="panel__close" id="panel-close">✕</button>
       <div class="panel__body" id="panel-body"></div>
@@ -70,7 +75,10 @@ export function createUI(root, { state, actions, info }) {
     panel: root.querySelector('#panel'),
     panelBody: root.querySelector('#panel-body'),
     inspect: root.querySelector('#inspect'),
+    placebar: root.querySelector('#placebar'),
+    placebarTxt: root.querySelector('#placebar-txt'),
   };
+  root.querySelector('#placebar-cancel').addEventListener('click', () => actions.stopPlacing?.());
 
   let panelName = null;
   let inspectId = null;
@@ -145,25 +153,20 @@ export function createUI(root, { state, actions, info }) {
     let body;
     if (sel.length < 2) {
       preview = null; previewKey = '';
-      body = `<p class="hint">Tap two koi in the pond to choose a pair, then study their breeding possibilities here before you commit.</p>`;
+      body = `<p class="hint">Tap two koi in the pond to choose a pair, then peek at what they might produce.</p>`;
     } else {
       const key = sel.map((f) => f.id).join('-');
       if (key !== previewKey) { preview = state.previewSelected(); previewKey = key; }
       const can = state.canBreed();
-      const top = preview.dist.slice(0, 5).map((d) => `
+      const top = preview.dist.slice(0, 3).map((d) => `
         <div class="obar"><label>${d.name}</label><div class="bar"><span style="width:${Math.round(d.pct * 100)}%"></span></div><b>${Math.round(d.pct * 100)}%</b></div>`).join('');
-      const starsRow = [1, 2, 3, 4, 5].map((s) => {
-        const pct = preview.starHist[s] / preview.trials;
-        return `<div class="starbar"><span style="height:${Math.round(8 + pct * 60)}px"></span><label>${s}★</label></div>`;
-      }).join('');
       body = `
         <div class="pair">${miniCard(sel[0])}<div class="pair__heart">♥</div>${miniCard(sel[1])}</div>
-        <h3>Likely varieties</h3><div class="odds">${top}</div>
-        <h3>Quality spread</h3><div class="stars-spread">${starsRow}</div>
-        <div class="preview-stats"><span>✨ best ${stars(preview.bestStars)}</span><span>avg ${preview.avgStars.toFixed(1)}★</span><span>🌟 new-trait ${Math.round(preview.mutationChance * 100)}%</span></div>
-        <button class="breedbtn" id="do-breed" ${can.ok ? '' : 'disabled'}>${can.ok ? `Breed this pair · 🪙 ${CONFIG.breedCost}` : can.msg}</button>`;
+        <h3>Most likely</h3><div class="odds">${top}</div>
+        <div class="preview-stats"><span>typically ${stars(Math.max(1, Math.round(preview.avgStars)))}</span><span>up to ${stars(preview.bestStars)}</span><span>🌟 ${Math.round(preview.mutationChance * 100)}% new trait</span></div>
+        <button class="breedbtn" id="do-breed" ${can.ok ? '' : 'disabled'}>${can.ok ? `Breed · 🪙 ${CONFIG.breedCost}` : can.msg}</button>`;
     }
-    el.panelBody.innerHTML = `<h2>🧬 Breeding Cave · 繁殖の洞</h2>${body}`;
+    el.panelBody.innerHTML = `<h2>🧬 Breeding · 繁殖</h2>${body}`;
     const btn = el.panelBody.querySelector('#do-breed');
     if (btn) btn.addEventListener('click', () => actions.breed());
   }
@@ -277,6 +280,10 @@ export function createUI(root, { state, actions, info }) {
 
   function tick(now) {
     renderHud(now);
+    const b = info.getBuild ? info.getBuild() : {};
+    if (b.placingType) { el.placebar.hidden = false; el.placebarTxt.textContent = `Placing ${DECOR_BY_ID[b.placingType]?.name || ''} — tap the garden`; }
+    else if (b.removeMode) { el.placebar.hidden = false; el.placebarTxt.textContent = 'Remove mode — tap a piece to sell it back'; }
+    else el.placebar.hidden = true;
     if (panelName === 'market') { const c = el.panelBody.querySelector('#mkt-count'); if (c) c.textContent = secs(state.market.nextRefresh - now); }
     if (panelName === 'offers') { const c = el.panelBody.querySelector('#off-count'); if (c) c.textContent = secs(state.nextOfferAt - now); }
     if (panelName === 'breed') { const b = el.panelBody.querySelector('#do-breed'); if (b) { const can = state.canBreed(now); b.disabled = !can.ok; b.textContent = can.ok ? `Breed this pair · 🪙 ${CONFIG.breedCost}` : can.msg; } }

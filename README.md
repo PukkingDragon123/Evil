@@ -48,13 +48,14 @@ Koi are precious — you get them two ways: the **Market** and **breeding**.
   breed. Offspring blend both parents' genes with occasional **mutations**.
 - **🍃 Shop (店)** — enlarge the pond and feed special foods: more income, faster
   breeding, finer broods, or more frequent visitors.
-- **⛩️ Build (普請)** — buy lanterns, torii gates, bridges, pagodas, trees, ducks,
-  snails and more, then **tap the garden** to place them (tap again in *remove
-  mode* to sell a piece back).
+- **⛩️ Build (普請)** — buy lanterns, torii gates, bridges, pagodas, trees,
+  snails and more. Pick a piece and a **ghost preview** follows your finger —
+  tap to place it (or use *remove mode* to sell a piece back).
 - **📖 Koi-dex (図鑑)** — discover all the real koi varieties (Kohaku, Tancho,
   Showa, Ogon, Asagi, Kumonryu, Butterfly…).
-- **🌦️ Weather** drifts from sun to sakura petals to rain. 🦆 Ducks paddle and
-  🐌 snails roam. Drag to look around, scroll to zoom, tap the water for ripples.
+- **🌦️ Weather** drifts from sun to sakura petals to rain. The water is clear,
+  so you can watch koi over the **pond bed** of sand, pebbles and waving plants.
+  Drag to look around, scroll to zoom, tap the water for ripples.
 
 Progress saves automatically, and your koi keep earning (a little) while away.
 
@@ -97,7 +98,8 @@ src/
     water.js          # stylised translucent water shader
     ripples.js        # tap ripples & droplet particles
     garden.js         # raked sand, rocks, lily pads, lotus, reeds, trees
-    critters.js       # ducks (with wakes) & snails
+    underwater.js     # pond bed: sand, pebbles, rocks, plants, light caustics
+    critters.js       # ambient snails
     weather.js        # sun / petals / cloud / rain cycle
     decor.js          # decoration models + placement manager
   ui/

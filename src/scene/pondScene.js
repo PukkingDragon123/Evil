@@ -16,7 +16,8 @@ import { createRipples } from './ripples.js';
 import { createKoiFish, updateKoiFish, disposeKoiFish, setKoiTime } from './koiFish.js';
 import { createCritters } from './critters.js';
 import { createWeather } from './weather.js';
-import { createDecor } from './decor.js';
+import { createDecor, buildDecoration } from './decor.js';
+import { createUnderwater, FLOOR_Y } from './underwater.js';
 
 const POND_R = CONFIG.pondRadius;
 
@@ -92,6 +93,8 @@ export function createPondScene() {
   // --- world ---
   const garden = createGarden(POND_R);
   scene.add(garden.group);
+  const underwater = createUnderwater(POND_R);
+  scene.add(underwater.group);
   const water = createWater(POND_R);
   water.material.uniforms.uLight.value.copy(sunDir); // align glints with the sun
   scene.add(water.mesh);
@@ -102,12 +105,10 @@ export function createPondScene() {
   const weather = createWeather({ sun, sky, fog: scene.fog, ripples });
   scene.add(weather.group);
 
-  // Ducks & snails for cozy ambient life.
+  // Snails for cozy ambient life along the rim.
   const critters = createCritters(POND_R, ripples);
   scene.add(critters.group);
-  critters.addDuck();
-  critters.addDuck();
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < 4; i++) {
     const a = Math.random() * Math.PI * 2, r = POND_R + 0.5 + Math.random() * 0.9;
     critters.addSnail(Math.cos(a) * r, Math.sin(a) * r);
   }
@@ -229,7 +230,7 @@ export function createPondScene() {
 
     // Shadow tracks on the pond floor; ring tracks on the surface.
     const sh = g.userData.shadow;
-    sh.position.set(v.x, -1.16, v.z);
+    sh.position.set(v.x, FLOOR_Y + 0.06, v.z);
     const ring = g.userData.ring;
     ring.position.set(v.x, 0.07, v.z);
     ring.rotation.z += dt * 0.8;
@@ -263,6 +264,7 @@ export function createPondScene() {
     weather.update(dt);
     water.update(elapsed);
     garden.update(elapsed);
+    underwater.update(elapsed);
     critters.update(dt, elapsed);
     ripples.update(dt);
     for (const v of views.values()) stepFish(v, dt, elapsed);
@@ -293,6 +295,28 @@ export function createPondScene() {
     return best;
   }
   function getWeather() { return weather.getState(); }
+
+  // --- placement ghost preview (follows the pointer while building) -------
+  let ghost = null;
+  function setGhost(type) {
+    clearGhost();
+    let obj = buildDecoration(type);
+    if (!obj) obj = new THREE.Mesh(new THREE.SphereGeometry(0.2, 8, 6), new THREE.MeshBasicMaterial({ color: 0xfff2cc }));
+    obj.traverse((o) => {
+      if (!o.isMesh) return;
+      o.castShadow = false; o.receiveShadow = false;
+      const ms = Array.isArray(o.material) ? o.material : [o.material];
+      ms.forEach((m) => { m.transparent = true; m.opacity = 0.55; m.depthWrite = false; });
+    });
+    ghost = obj; scene.add(ghost);
+  }
+  function moveGhost(point) { if (ghost) ghost.position.set(point.x, 0, point.z); }
+  function clearGhost() {
+    if (!ghost) return;
+    scene.remove(ghost);
+    ghost.traverse((o) => { if (o.isMesh) { o.geometry.dispose?.(); const ms = Array.isArray(o.material) ? o.material : [o.material]; ms.forEach((m) => m.dispose?.()); } });
+    ghost = null;
+  }
 
   // --- pointer helpers ---
   const raycaster = new THREE.Raycaster();
@@ -347,6 +371,7 @@ export function createPondScene() {
     addFish, removeFish, hasFish, fishIds, syncSelection,
     surfacePoint, nearestFish, startle,
     addDecoration, removeDecoration, pickDecoration, getWeather,
+    setGhost, moveGhost, clearGhost,
     orbit, zoom,
   };
 }

@@ -16,7 +16,6 @@ export const DECOR = [
   { id: 'pine',     name: 'Pine Tree',      jp: '松',     price: 180, place: 'land',  icon: '🌲' },
   { id: 'bush',     name: 'Azalea Bush',    jp: '躑躅',   price: 70,  place: 'land',  icon: '🌳' },
   { id: 'lilies',   name: 'Lily Cluster',   jp: '睡蓮',   price: 60,  place: 'water', icon: '🪷' },
-  { id: 'duck',     name: 'Duck',           jp: '鴨',     price: 140, place: 'water', icon: '🦆' },
   { id: 'snail',    name: 'Pond Snail',     jp: '蝸牛',   price: 45,  place: 'edge',  icon: '🐌' },
 ];
 

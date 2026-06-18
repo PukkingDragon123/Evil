@@ -95,14 +95,14 @@ const actions = {
     const d = DECOR_BY_ID[type];
     if (!d) return;
     if (state.coins < d.price) return ui.toast('Not enough coins for that.', 'warn');
+    ui.closePanel();           // gives a clear view of the garden to place in
     pendingPlace = type; removeMode = false;
-    ui.toast(`Tap the garden to place a ${d.name}.`, 'info');
+    scene.setGhost(type);
   },
   toggleRemoveMode() {
-    removeMode = !removeMode; pendingPlace = null;
-    if (removeMode) ui.toast('Remove mode — tap a placed piece to sell it back.', 'info');
+    removeMode = !removeMode; pendingPlace = null; scene.clearGhost();
   },
-  stopPlacing() { pendingPlace = null; removeMode = false; },
+  stopPlacing() { pendingPlace = null; removeMode = false; scene.clearGhost(); },
 };
 
 const info = {
@@ -133,6 +133,7 @@ canvas.addEventListener('pointerdown', (e) => {
   canvas.setPointerCapture(e.pointerId);
 });
 canvas.addEventListener('pointermove', (e) => {
+  if (pendingPlace) { const pt = scene.surfacePoint(e.clientX, e.clientY); if (pt) scene.moveGhost(pt); }
   if (!down) return;
   const dx = e.clientX - lx, dy = e.clientY - ly; lx = e.clientX; ly = e.clientY;
   moved += Math.abs(dx) + Math.abs(dy);

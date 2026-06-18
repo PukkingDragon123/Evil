@@ -26,7 +26,7 @@ function sampleProfile(arr, t) {
 let _bodyGeo = null;
 function bodyGeometry() {
   if (_bodyGeo) return _bodyGeo;
-  const N = 34, M = 20;
+  const N = 18, M = 11; // low-poly: faceted, stylised
   // Slim koi: narrow body, gently tapering, fullest just behind the head.
   const WIDTH = [0.012, 0.12, 0.21, 0.27, 0.28, 0.25, 0.20, 0.15, 0.10, 0.055, 0.03];
   const pos = [], uv = [], idx = [];
@@ -110,7 +110,7 @@ function barbelGeometry() {
   return _barbelGeo;
 }
 let _eyeGeo = null, _eyeHiGeo = null;
-function eyeGeometry() { if (!_eyeGeo) _eyeGeo = new THREE.SphereGeometry(0.05, 12, 10); return _eyeGeo; }
+function eyeGeometry() { if (!_eyeGeo) _eyeGeo = new THREE.IcosahedronGeometry(0.055, 0); return _eyeGeo; }
 function eyeHiGeometry() { if (!_eyeHiGeo) _eyeHiGeo = new THREE.SphereGeometry(0.018, 8, 6); return _eyeHiGeo; }
 
 // shared soft-edge alpha for fins
@@ -208,6 +208,7 @@ export function createKoiFish(desc) {
   const bodyMat = new THREE.MeshStandardMaterial({
     map: tex, roughness: Math.max(0.18, 0.82 - 0.55 * p.luster), metalness: 0.08 + 0.62 * p.luster,
     emissive: color(p.base).multiplyScalar(p.luster > 0.7 ? 0.12 : 0), side: THREE.DoubleSide,
+    flatShading: true,
   });
   applyBend(bodyMat, bend, 0); materials.push(bodyMat);
   group.add(new THREE.Mesh(bodyGeometry(), bodyMat));
@@ -217,7 +218,7 @@ export function createKoiFish(desc) {
   const finBase = {
     color: finCol, transparent: true, opacity: p.fin === 'Veil' ? 0.62 : 0.8,
     roughness: 0.5, metalness: 0.1 + 0.4 * p.luster, side: THREE.DoubleSide,
-    depthWrite: false, alphaMap: finAlpha(),
+    depthWrite: false, alphaMap: finAlpha(), flatShading: true,
   };
   const finMat = new THREE.MeshStandardMaterial(finBase); materials.push(finMat);
   const finLen = { Standard: 1, Fan: 1.18, Long: 1.6, Veil: 2.1 }[p.fin] || 1;
